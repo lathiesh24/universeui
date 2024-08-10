@@ -1,45 +1,35 @@
-import React, { useState } from "react";
-import { useSpring, animated, to as interpolate } from "@react-spring/web";
+import React, { useState } from 'react';
+import { useSpring, animated, to as interpolate } from '@react-spring/web';
 import {
-  FaAppleAlt,
-  FaBolt,
-  FaHeartbeat,
-  FaHome,
-  FaIndustry,
-  FaLaptopCode,
-  FaPiggyBank,
-  FaPlug,
-  FaRing,
-  FaSatelliteDish,
-  FaShoppingBasket,
-} from "react-icons/fa";
+  FaAppleAlt, FaBolt, FaHeartbeat, FaHome, FaIndustry, FaLaptopCode,
+  FaPiggyBank, FaPlug, FaRing, FaSatelliteDish, FaShoppingBasket,
+} from 'react-icons/fa';
 
 const industries = [
-  { name: "Energy", icon: <FaBolt /> },
-  { name: "Materials", icon: <FaRing /> },
-  { name: "Industrials", icon: <FaIndustry /> },
-  { name: "Consumer Discretionary", icon: <FaShoppingBasket /> },
-  { name: "Consumer Staples", icon: <FaAppleAlt /> },
-  { name: "Health Care", icon: <FaHeartbeat /> },
-  { name: "Financials", icon: <FaPiggyBank /> },
-  { name: "Information Technology", icon: <FaLaptopCode /> },
-  { name: "Communication Services", icon: <FaSatelliteDish /> },
-  { name: "Utilities", icon: <FaPlug /> },
-  { name: "Real Estate", icon: <FaHome /> },
+  { name: 'Energy', icon: <FaBolt />, subSectors: ['Energy Equipment & Services', 'Oil, Gas & Consumable Fuels'] },
+  { name: 'Materials', icon: <FaRing />, subSectors: ['Chemicals', 'Construction Materials', 'Metals & Mining'] },
+  { name: 'Industrials', icon: <FaIndustry />, subSectors: ['Aerospace & Defense', 'Machinery', 'Construction & Engineering'] },
+  { name: 'Consumer Discretionary', icon: <FaShoppingBasket />, subSectors: ['Automobiles', 'Household Durables', 'Leisure Products'] },
+  { name: 'Consumer Staples', icon: <FaAppleAlt />, subSectors: ['Beverages', 'Food Products', 'Tobacco'] },
+  { name: 'Health Care', icon: <FaHeartbeat />, subSectors: ['Health Care Equipment', 'Biotechnology', 'Pharmaceuticals'] },
+  { name: 'Financials', icon: <FaPiggyBank />, subSectors: ['Banks', 'Insurance', 'Investment Funds'] },
+  { name: 'Information Technology', icon: <FaLaptopCode />, subSectors: ['Software', 'Hardware', 'Semiconductors'] },
+  { name: 'Communication Services', icon: <FaSatelliteDish />, subSectors: ['Telecommunications', 'Media'] },
+  { name: 'Utilities', icon: <FaPlug />, subSectors: ['Electric Utilities', 'Gas Utilities'] },
+  { name: 'Real Estate', icon: <FaHome />, subSectors: ['REITs', 'Real Estate Management'] },
 ];
 
 const MagnifyingGlassAnimated = () => {
   const [clicked, setClicked] = useState(false);
   const [selectedIndustry, setSelectedIndustry] = useState(null);
+  const [subSectors, setSubSectors] = useState([]);
 
-  // Animation for the background and magnifying glass
   const { backgroundScale, backgroundOpacity } = useSpring({
     backgroundScale: clicked ? 1.5 : 1,
     backgroundOpacity: clicked ? 0 : 1,
     config: { tension: 200, friction: 20 },
   });
 
-  // Animation for the infinity path
   const { progress } = useSpring({
     loop: true,
     from: { progress: 0 },
@@ -48,28 +38,23 @@ const MagnifyingGlassAnimated = () => {
     reset: true,
   });
 
-  // Animation for selected industry card
   const { industryTransform, industryScale } = useSpring({
-    industryTransform: selectedIndustry
-      ? "translate(-30%, -50%) translateX(-50vw)"
-      : "translate(0px, 0px)",
+    industryTransform: selectedIndustry ? 'translate(-30%, -50%) translateX(-50vw)' : 'translate(0px, 0px)',
     industryScale: selectedIndustry ? 2.9 : 1,
     config: { tension: 200, friction: 18 },
   });
 
-  // Handle click on industry card
   const handleIndustryClick = (industry) => {
     setSelectedIndustry(industry);
+    setSubSectors(industry.subSectors);
   };
 
-  // Handle click on magnifying glass
   const handleClick = () => {
     setClicked(true);
   };
 
   return (
     <div className="relative flex justify-center items-center h-screen w-screen overflow-hidden bg-gray-100">
-      {/* Background image */}
       <animated.img
         src="graph.svg"
         alt="Background graph"
@@ -79,8 +64,6 @@ const MagnifyingGlassAnimated = () => {
         }}
         className="absolute w-1/2 h-1/2 mb-16 object-contain"
       />
-
-      {/* Animated magnifying glass */}
       {!clicked && (
         <animated.img
           src="magnifying-glass.svg"
@@ -89,20 +72,14 @@ const MagnifyingGlassAnimated = () => {
           style={{
             transform: interpolate([progress, industryScale], (t, s) => {
               const a = 50;
-              const x =
-                (a * Math.sqrt(2) * Math.cos(t)) /
-                (Math.sin(t) * Math.sin(t) + 1);
-              const y =
-                (a * Math.sqrt(2) * Math.cos(t) * Math.sin(t)) /
-                (Math.sin(t) * Math.sin(t) + 1);
+              const x = (a * Math.sqrt(2) * Math.cos(t)) / (Math.sin(t) * Math.sin(t) + 1);
+              const y = (a * Math.sqrt(2) * Math.cos(t) * Math.sin(t)) / (Math.sin(t) * Math.sin(t) + 1);
               return `translate(${x}px, ${y}px) scale(${s})`;
             }),
           }}
           className="absolute z-10 w-24 h-24 cursor-pointer"
         />
       )}
-
-      {/* Industry cards */}
       {clicked && (
         <div className="flex flex-row flex-wrap gap-x-32 gap-y-24 px-64">
           {industries.map((industry, index) => (
@@ -150,6 +127,16 @@ const MagnifyingGlassAnimated = () => {
               </div>
             </animated.div>
           ))}
+          {selectedIndustry && (
+            <div className="absolute text-lg font-semibold mt-8">
+              Sub-Sectors:
+              {subSectors.map((sub, idx) => (
+                <div key={idx} className="mt-1">
+                  {sub}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

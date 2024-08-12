@@ -1,10 +1,8 @@
 import React from "react";
 
 const App = () => {
-  // Number of dots you want along the curve
   const numDots = 5;
 
-  // Generate an array of dots with calculated positions
   const dots = Array.from({ length: numDots }).map((_, index) => {
     // Calculate the angle for each dot
     const angle = (index / (numDots - 1)) * Math.PI; // Calculate angle from 0 to π (half-circle)

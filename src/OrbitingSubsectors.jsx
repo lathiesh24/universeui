@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const App = () => {
-  const totalDots = 12; // Total number of dots
+  const totalDots = 3; // Total number of dots
   const anglePerDot = (2 * Math.PI) / totalDots; // Angle per dot
 
   const industryNames = [

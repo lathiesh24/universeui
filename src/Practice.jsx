@@ -41,7 +41,7 @@ const InnerIndustryName = [
 const CombinedComponent = () => {
   // Semicircle State and Logic
   const totalPositions = 8;
-  const totalDots = 2;
+  const totalDots = 8;
   const totalInnerDots = 8;
   const radiusX = 190;
   const radiusY = 198;
@@ -50,9 +50,12 @@ const CombinedComponent = () => {
 
   const [leftAngleOffset, setLeftAngleOffset] = useState(Math.PI / 2);
   const [leftInnerAngleOffset, setLeftInnerAngleOffset] = useState(Math.PI / 2);
+  const [rightAngleOffset, setRightAngleOffset] = useState(-Math.PI / 2);
   const [isDragging, setIsDragging] = useState(false);
+  const [isDraggingRight, setIsDraggingRight] = useState(false);
   const [isDraggingLeftInner, setIsDraggingLeftInner] = useState(false);
   const [lastTouchX, setLastTouchX] = useState(null);
+  const [lastTouchXRight, setLastTouchXRight] = useState(null);
   const [lastTouchXLeftInner, setLastTouchXLeftInner] = useState(null);
 
   const outerRef = useRef(null);
@@ -102,6 +105,35 @@ const CombinedComponent = () => {
     }
   };
 
+  // Function to handle touch movement for rotation (right circle)
+  const handleTouchMoveRight = (event) => {
+    if (isDraggingRight && !isDraggingLeftInner) {
+      const touch = event.touches[0];
+      if (lastTouchXRight !== null) {
+        const deltaX = touch.clientX - lastTouchXRight;
+        const rotationSpeed = 0.0005; // Adjust the rotation speed to make it slower
+        setRightAngleOffset(
+          (prevOffset) => prevOffset + deltaX * rotationSpeed
+        );
+      }
+      setLastTouchXRight(touch.clientX);
+    }
+  };
+
+  // Function to stop dragging (right circle)
+  const handleTouchEndRight = () => {
+    setIsDraggingRight(false);
+    setLastTouchXRight(null);
+  };
+
+  // Function to start dragging (right circle)
+  const handleTouchStartRight = (event) => {
+    if (!isDraggingLeftInner) {
+      setIsDraggingRight(true);
+      setLastTouchXRight(event.touches[0].clientX);
+    }
+  };
+
   // Function to handle touch movement for rotation (inner circle)
   const handleTouchMoveInner = (event) => {
     if (isDraggingLeftInner) {
@@ -144,6 +176,21 @@ const CombinedComponent = () => {
     };
   }, [isDragging]);
 
+  // Attach the touch event listeners for the right circle
+  useEffect(() => {
+    if (isDraggingRight) {
+      window.addEventListener("touchmove", handleTouchMoveRight);
+      window.addEventListener("touchend", handleTouchEndRight);
+    } else {
+      window.removeEventListener("touchmove", handleTouchMoveRight);
+      window.removeEventListener("touchend", handleTouchEndRight);
+    }
+    return () => {
+      window.removeEventListener("touchmove", handleTouchMoveRight);
+      window.removeEventListener("touchend", handleTouchEndRight);
+    };
+  }, [isDraggingRight]);
+
   // Attach the touch event listeners for the inner circle
   useEffect(() => {
     if (isDraggingLeftInner) {
@@ -153,10 +200,6 @@ const CombinedComponent = () => {
       window.removeEventListener("touchmove", handleTouchMoveInner);
       window.removeEventListener("touchend", handleTouchEndInner);
     }
-    return () => {
-      window.removeEventListener("touchmove", handleTouchMoveInner);
-      window.removeEventListener("touchend", handleTouchEndInner);
-    };
   }, [isDraggingLeftInner]);
 
   // Calculate the positions of the visible dots for the outer circle
@@ -164,6 +207,14 @@ const CombinedComponent = () => {
     const angle = (index / totalPositions) * Math.PI * 2 + leftAngleOffset;
     const x = radiusX * Math.sin(angle);
     const y = radiusY * Math.cos(angle);
+    return { x, y, index };
+  });
+
+  // Calculate the positions of the visible dots for the right (mirrored) circle
+  const visibleDotsRight = Array.from({ length: totalDots }).map((_, index) => {
+    const angle = (index / totalPositions) * Math.PI * 2 + rightAngleOffset;
+    const x = radiusX * Math.sin(angle);
+    const y = -radiusY * Math.cos(angle); // Invert the y-coordinate
     return { x, y, index };
   });
 
@@ -179,11 +230,11 @@ const CombinedComponent = () => {
   );
 
   return (
-    <div className="relative h-screen overflow-hidden">
-      {/* Semicircle Component */}
+    <div className="relative h-screen overflow-hidden flex flex-col justify-center">
+      {/* Semicircle Component (Left) */}
       <div
         ref={outerRef}
-        className="relative w-full h-[200px] rounded-b-full border-2 cursor-pointer"
+        className="absolute top-0 left-0 right-0 h-[200px] rounded-b-full border-2 cursor-pointer"
         onTouchStart={handleTouchStart}
       >
         {visibleDots.slice(0, totalPositions).map((dot) => (
@@ -245,11 +296,11 @@ const CombinedComponent = () => {
       </div>
 
       {/* Horizontal Scrolling Component */}
-      <div className="relative mt-32">
+      <div className="relative my-8">
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
-          className="w-full flex overflow-x-auto whitespace-nowrap scroll-smooth"
+          className="w-full flex overflow-x-auto whitespace-nowrap scroll-smooth scrollbar-hide"
           style={{ overflowX: "scroll", whiteSpace: "nowrap" }}
         >
           {[...Array(10)].map((_, i) =>
@@ -263,6 +314,41 @@ const CombinedComponent = () => {
             ))
           )}
         </div>
+      </div>
+
+      {/* Semicircle Component (Right, Mirrored) */}
+      <div
+        className="absolute bottom-0 right-0 left-0 w-full h-[200px] rounded-t-full border-2 cursor-pointer"
+        onTouchStart={handleTouchStartRight}
+      >
+        {visibleDotsRight.slice(0, totalPositions).map((dot) => (
+          <div
+            key={dot.index}
+            className="absolute"
+            style={{
+              left: `${dot.x + 180}px`, // Center x-coordinate
+              bottom: `${dot.y + 16}px`, // Mirror direction for y-coordinate
+              userSelect: "none",
+            }}
+          >
+            <div
+              className={`flex gap-4 flex-row ${
+                dot.index === 0 ? "border-blue-500" : "border-black"
+              }`}
+            >
+              <div
+                className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
+                  dot.index === 0 ? "border-blue-500" : ""
+                }`}
+              >
+                {dot.index + 1}
+              </div>
+              <div className="text-sm mt-2">
+                {industryNames[dot.index % totalDots]}
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

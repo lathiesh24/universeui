@@ -5,84 +5,95 @@ const App = () => {
   const sectors = sectorData.sectors;
 
   const getSectorData = (path) => {
-    return sectors.flatMap((sector) =>
-      path === "industries"
-        ? sector.industries?.map((industry) => ({
-            sectorName: sector.sectorName,
-            industryName: industry.industryName,
-          })) || []
-        : path === "technologies"
-        ? sector.industries?.flatMap(
-            (industry) =>
-              industry.technologies?.map((tech) => ({
-                sectorName: sector.sectorName,
-                industryName: industry.industryName,
-                technologyName: tech.technologyName,
-              })) || []
-          ) || []
-        : path === "use_cases"
-        ? sector.industries?.flatMap(
-            (industry) =>
-              industry.technologies?.flatMap(
-                (tech) =>
-                  tech.useCases?.map((useCase) => ({
-                    sectorName: sector.sectorName,
-                    industryName: industry.industryName,
-                    technologyName: tech.technologyName,
-                    useCaseTitle: useCase.useCaseTitle,
-                  })) || []
-              ) || []
-          ) || []
-        : sector.name
+    return sectors.flatMap(
+      (sector) =>
+        sector.industries?.flatMap(
+          (industry) =>
+            industry.technologies?.flatMap((tech) =>
+              path === "use_cases"
+                ? tech.technologyName === "Generative AI" ||
+                  tech.technologyName === "Next-Generation Software Development"
+                  ? tech.useCases?.map((useCase) => ({
+                      sectorName: sector.sectorName,
+                      industryName: industry.industryName,
+                      technologyName: tech.technologyName,
+                      useCaseTitle: useCase.useCaseTitle,
+                      useCaseDescription: useCase.useCaseDescription,
+                      referenceSource: useCase.referenceSource,
+                      associatedStartups: useCase.associatedStartups,
+                    })) || []
+                  : []
+                : []
+            ) || []
+        ) || []
     );
   };
 
-  const [leftOuterCircleData, setLeftOuterCircleData] = useState(
+  const [leftOuterCircleData1, setLeftOuterCircleData1] = useState(
     getSectorData("industries")
   );
-
+  const [leftOuterCircleData2, setLeftOuterCircleData2] = useState([]);
+  const [innerLeftCircleData, setInnerLeftCircleData] = useState([]);
   const [firstRightCircleData, setFirstRightCircleData] = useState(
     getSectorData("technologies")
   );
-  const [innerLeftCircleData, setInnerLeftCircleData] = useState([]);
-  const verticalDotsData = getSectorData("use_cases");
-  const secondRightCircleData = sectors.flatMap((sector) =>
-    sector.industries?.flatMap((industry) =>
-      industry.technologies?.flatMap((tech) =>
-        tech.useCases?.flatMap((useCase) =>
-          useCase.associatedStartups.map((startup) => ({
-            sectorName: sector.sectorName,
-            industryName: industry.industryName,
-            technologyName: tech.technologyName,
-            useCaseTitle: useCase.useCaseTitle,
-            startupName: startup,
-          }))
-        )
-      )
-    )
+  const [verticalDotsData, setVerticalDotsData] = useState(
+    getSectorData("use_cases")
   );
+  const secondRightCircleData = [
+    {
+      companyName: "Zest AI",
+      description:
+        "Specializes in using machine learning to improve credit underwriting models, helping insurers predict risks more accurately.",
+    },
+    {
+      companyName: "Lapetus Solutions",
+      description:
+        "Offers facial analytics and biometric solutions to enhance life insurance underwriting processes.",
+    },
+    {
+      companyName: "UnderwriteMe",
+      description:
+        "Provides a rules engine that uses data and analytics to streamline and predict underwriting decisions.",
+    },
+    {
+      companyName: "Akur8",
+      description:
+        "Uses AI to automate insurance pricing and underwriting, improving speed and accuracy.",
+    },
+    {
+      companyName: "Flyreel",
+      description:
+        "Utilizes AI to assess property conditions and risks for underwriting, enhancing predictive accuracy.",
+    },
+  ];
 
-  const totalLeftDots = leftOuterCircleData.length;
+  const totalLeftDots1 = leftOuterCircleData1.length;
+  const totalLeftDots2 = leftOuterCircleData2.length;
   const totalMiddleDots = innerLeftCircleData.length;
   const totalRightDots = firstRightCircleData.length;
   const totalSecondRightDots = secondRightCircleData.length;
 
-  const anglePerDotLeft = (2 * Math.PI) / totalLeftDots;
+  const anglePerDotLeft1 = (2 * Math.PI) / totalLeftDots1;
+  const anglePerDotLeft2 = (2 * Math.PI) / totalLeftDots2;
   const anglePerDotMiddle = (2 * Math.PI) / totalMiddleDots;
   const anglePerDotRight = (2 * Math.PI) / totalRightDots;
   const anglePerDotSecondRight = (2 * Math.PI) / totalSecondRightDots;
 
-  const [leftAngleOffset, setLeftAngleOffset] = useState(Math.PI / 2);
+  const [leftAngleOffset1, setLeftAngleOffset1] = useState(Math.PI / 2);
+  const [leftAngleOffset2, setLeftAngleOffset2] = useState(Math.PI / 2);
   const [middleAngleOffset, setMiddleAngleOffset] = useState(Math.PI / 2);
   const [rightAngleOffset, setRightAngleOffset] = useState(Math.PI / 2);
   const [secondRightAngleOffset, setSecondRightAngleOffset] = useState(
     Math.PI / 2
   );
-  const [isDraggingLeft, setIsDraggingLeft] = useState(false);
+  const [isDraggingLeft1, setIsDraggingLeft1] = useState(false);
+  const [isDraggingLeft2, setIsDraggingLeft2] = useState(false);
   const [isDraggingMiddle, setIsDraggingMiddle] = useState(false);
   const [isDraggingRight, setIsDraggingRight] = useState(false);
   const [isDraggingSecondRight, setIsDraggingSecondRight] = useState(false);
-  const [lastMouseYLeft, setLastMouseYLeft] = useState(null);
+  const [lastMouseYLeft1, setLastMouseYLeft1] = useState(null);
+  const [lastMouseYLeft2, setLastMouseYLeft2] = useState(null);
   const [lastMouseYMiddle, setLastMouseYMiddle] = useState(null);
   const [lastMouseYRight, setLastMouseYRight] = useState(null);
   const [lastMouseYSecondRight, setLastMouseYSecondRight] = useState(null);
@@ -91,17 +102,21 @@ const App = () => {
   const [useSecondRightSemicircle, setUseSecondRightSemicircle] =
     useState(false);
   const [showMiddleCircle, setShowMiddleCircle] = useState(false);
-  const [interactionStage, setInteractionStage] = useState("left");
+  const [interactionStage, setInteractionStage] = useState("left1");
 
-  const leftCircleRef = useRef(null);
+  const leftCircleRef1 = useRef(null);
+  const leftCircleRef2 = useRef(null);
   const middleCircleRef = useRef(null);
   const rightCircleRef = useRef(null);
   const secondRightCircleRef = useRef(null);
 
   useEffect(() => {
     const handleMouseMove = (event) => {
-      if (isDraggingLeft) {
-        handleMouseMoveLeft(event);
+      if (isDraggingLeft1) {
+        handleMouseMoveLeft1(event);
+      }
+      if (isDraggingLeft2) {
+        handleMouseMoveLeft2(event);
       }
       if (isDraggingMiddle) {
         handleMouseMoveMiddle(event);
@@ -122,8 +137,10 @@ const App = () => {
       window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [
-    isDraggingLeft,
-    lastMouseYLeft,
+    isDraggingLeft1,
+    lastMouseYLeft1,
+    isDraggingLeft2,
+    lastMouseYLeft2,
     isDraggingMiddle,
     lastMouseYMiddle,
     isDraggingRight,
@@ -132,15 +149,31 @@ const App = () => {
     lastMouseYSecondRight,
   ]);
 
-  const handleMouseMoveLeft = (event) => {
-    if (isDraggingLeft) {
+  const handleMouseMoveLeft1 = (event) => {
+    if (isDraggingLeft1) {
       const { clientY } = event;
-      if (lastMouseYLeft !== null) {
-        const deltaY = clientY - lastMouseYLeft;
+      if (lastMouseYLeft1 !== null) {
+        const deltaY = clientY - lastMouseYLeft1;
         const rotationSpeed = 0.005;
-        setLeftAngleOffset((prevOffset) => prevOffset - deltaY * rotationSpeed);
+        setLeftAngleOffset1(
+          (prevOffset) => prevOffset - deltaY * rotationSpeed
+        );
       }
-      setLastMouseYLeft(clientY);
+      setLastMouseYLeft1(clientY);
+    }
+  };
+
+  const handleMouseMoveLeft2 = (event) => {
+    if (isDraggingLeft2) {
+      const { clientY } = event;
+      if (lastMouseYLeft2 !== null) {
+        const deltaY = clientY - lastMouseYLeft2;
+        const rotationSpeed = 0.005;
+        setLeftAngleOffset2(
+          (prevOffset) => prevOffset - deltaY * rotationSpeed
+        );
+      }
+      setLastMouseYLeft2(clientY);
     }
   };
 
@@ -187,20 +220,35 @@ const App = () => {
   };
 
   const handleMouseUp = () => {
-    setIsDraggingLeft(false);
+    setIsDraggingLeft1(false);
+    setIsDraggingLeft2(false);
     setIsDraggingMiddle(false);
     setIsDraggingRight(false);
     setIsDraggingSecondRight(false);
-    setLastMouseYLeft(null);
+    setLastMouseYLeft1(null);
+    setLastMouseYLeft2(null);
     setLastMouseYMiddle(null);
     setLastMouseYRight(null);
     setLastMouseYSecondRight(null);
   };
 
-  const handleMouseDownLeft = (event) => {
-    if (leftCircleRef.current && leftCircleRef.current.contains(event.target)) {
-      setIsDraggingLeft(true);
-      setLastMouseYLeft(event.clientY);
+  const handleMouseDownLeft1 = (event) => {
+    if (
+      leftCircleRef1.current &&
+      leftCircleRef1.current.contains(event.target)
+    ) {
+      setIsDraggingLeft1(true);
+      setLastMouseYLeft1(event.clientY);
+    }
+  };
+
+  const handleMouseDownLeft2 = (event) => {
+    if (
+      leftCircleRef2.current &&
+      leftCircleRef2.current.contains(event.target)
+    ) {
+      setIsDraggingLeft2(true);
+      setLastMouseYLeft2(event.clientY);
     }
   };
 
@@ -234,30 +282,29 @@ const App = () => {
     }
   };
 
-  const handleDotClickLeft = (dotIndex) => {
-    if (interactionStage === "left") {
+  const handleDotClickLeft1 = (dotIndex) => {
+    if (interactionStage === "left1") {
       handleDotClick(
         dotIndex,
-        setLeftAngleOffset,
-        leftAngleOffset,
-        totalLeftDots
+        setLeftAngleOffset1,
+        leftAngleOffset1,
+        totalLeftDots1
       );
       if (!rightSemicircleOpen) {
-        // Open the right semicircle on the first click
         setRightSemicircleOpen(true);
-        setInteractionStage("right");
-      } else if (interactionStage === "right") {
-        // Open the vertical line for use cases after data swap
-        setOpenVerticalLine(true);
-        setInteractionStage("vertical");
       }
-    } else if (interactionStage === "vertical") {
+    }
+  };
+
+  const handleDotClickLeft2 = (dotIndex) => {
+    if (interactionStage === "left2") {
       handleDotClick(
         dotIndex,
-        setLeftAngleOffset,
-        leftAngleOffset,
-        totalLeftDots
+        setLeftAngleOffset2,
+        leftAngleOffset2,
+        totalLeftDots2
       );
+      setOpenVerticalLine(true); // Open vertical line
     }
   };
 
@@ -271,11 +318,11 @@ const App = () => {
   };
 
   const handleVerticalDotClick = () => {
-    setUseSecondRightSemicircle(true);
+    setUseSecondRightSemicircle(true); // Show second right semicircle
   };
 
   const handleDotClickRight = (dotIndex) => {
-    if (interactionStage === "right") {
+    if (interactionStage === "left1") {
       handleDotClick(
         dotIndex,
         setRightAngleOffset,
@@ -283,20 +330,14 @@ const App = () => {
         totalRightDots
       );
 
-      // Move the entire right semicircle data to the left outer semicircle
-      setLeftOuterCircleData(firstRightCircleData);
+      setLeftOuterCircleData2(firstRightCircleData); // Move right semicircle data to second left outer semicircle
+      setInnerLeftCircleData(leftOuterCircleData1); // Move first left outer circle data to inner left circle
+      setInteractionStage("left2"); // Transition to the second left outer circle
 
-      // Move the current left outer circle data to the left inner circle
-      setInnerLeftCircleData(leftOuterCircleData);
+      setRightSemicircleOpen(false); // Hide the right semicircle
+      setLeftOuterCircleData1([]); // Hide the first left outer circle
 
-      // Hide the right semicircle
-      setRightSemicircleOpen(false);
-
-      // Show the inner left semicircle
-      setShowMiddleCircle(true);
-
-      // Update the interaction stage to "vertical" to handle opening vertical dots
-      setInteractionStage("vertical");
+      setShowMiddleCircle(true); // Show the inner left semicircle
     }
   };
 
@@ -314,22 +355,29 @@ const App = () => {
       ((angleOffset % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
     const currentCenterIndex = Math.round(
-      ((Math.PI / 2 - normalizedAngleOffset) / anglePerDotLeft + totalDots) %
+      ((Math.PI / 2 - normalizedAngleOffset) / anglePerDotLeft1 + totalDots) %
         totalDots
     );
 
     const distance = (dotIndex - currentCenterIndex + totalDots) % totalDots;
     const shortestDistance =
       distance <= totalDots / 2 ? distance : distance - totalDots;
-    const angleDifference = shortestDistance * anglePerDotLeft;
+    const angleDifference = shortestDistance * anglePerDotLeft1;
     setAngleOffset((prevOffset) => prevOffset - angleDifference);
   };
 
   const radiusX = 410;
   const radiusY = 378;
 
-  const leftDots = Array.from({ length: totalLeftDots }).map((_, index) => {
-    const angle = (index / totalLeftDots) * Math.PI * 2 + leftAngleOffset;
+  const leftDots1 = Array.from({ length: totalLeftDots1 }).map((_, index) => {
+    const angle = (index / totalLeftDots1) * Math.PI * 2 + leftAngleOffset1;
+    const x = radiusX * Math.sin(angle);
+    const y = radiusY * Math.cos(angle);
+    return { x, y, index };
+  });
+
+  const leftDots2 = Array.from({ length: totalLeftDots2 }).map((_, index) => {
+    const angle = (index / totalLeftDots2) * Math.PI * 2 + leftAngleOffset2;
     const x = radiusX * Math.sin(angle);
     const y = radiusY * Math.cos(angle);
     return { x, y, index };
@@ -361,9 +409,13 @@ const App = () => {
     }
   );
 
-  const leftCenterIndex = Math.round(
-    ((Math.PI / 2 - leftAngleOffset) / anglePerDotLeft + totalLeftDots) %
-      totalLeftDots
+  const leftCenterIndex1 = Math.round(
+    ((Math.PI / 2 - leftAngleOffset1) / anglePerDotLeft1 + totalLeftDots1) %
+      totalLeftDots1
+  );
+  const leftCenterIndex2 = Math.round(
+    ((Math.PI / 2 - leftAngleOffset2) / anglePerDotLeft2 + totalLeftDots2) %
+      totalLeftDots2
   );
   const middleCenterIndex = Math.round(
     ((Math.PI / 2 - middleAngleOffset) / anglePerDotMiddle + totalMiddleDots) %
@@ -381,20 +433,18 @@ const App = () => {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Left Circle */}
+      {/* First Left Circle */}
       <div
-        className="fixed top-0 left-0 h-full w-[432px] rounded-r-full border-2"
-        ref={leftCircleRef}
-        onMouseDown={handleMouseDownLeft}
+        className={`fixed top-0 left-0 h-full w-[432px] rounded-r-full border-2 ${
+          interactionStage !== "left2" ? "block" : "hidden"
+        }`}
+        ref={leftCircleRef1}
+        onMouseDown={handleMouseDownLeft1}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="absolute h-[500px] w-[250px] rounded-r-full border-2 top-32"></div>
 
-        {showMiddleCircle && (
-          <div className="absolute h-[300px] w-[150px] rounded-r-full bg-blue-300 shadow-md top-[232px]"></div>
-        )}
-
-        {leftDots.map((dot) => (
+        {leftDots1.map((dot) => (
           <div
             key={dot.index}
             className="absolute flex flex-col items-center justify-center cursor-pointer"
@@ -404,29 +454,29 @@ const App = () => {
               userSelect: "none",
             }}
             onMouseDown={() => {
-              setIsDraggingLeft(true);
-              setLastMouseYLeft(null);
+              setIsDraggingLeft1(true);
+              setLastMouseYLeft1(null);
             }}
-            onClick={() => handleDotClickLeft(dot.index)}
+            onClick={() => handleDotClickLeft1(dot.index)}
           >
             <div
               className={`flex flex-row items-center justify-center ${
-                dot.index === leftCenterIndex
+                dot.index === leftCenterIndex1
                   ? "border-blue-500"
                   : "border-black"
               }`}
               style={{
-                textAlign: "center", // Center text below the circle
+                textAlign: "center",
               }}
             >
               <div
                 className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
-                  dot.index === leftCenterIndex ? "border-blue-500" : ""
+                  dot.index === leftCenterIndex1 ? "border-blue-500" : ""
                 }`}
                 style={{
-                  flexShrink: 0, // Prevent shrinking due to text
-                  width: "40px", // Maintain the width
-                  height: "40px", // Maintain the height
+                  flexShrink: 0,
+                  width: "40px",
+                  height: "40px",
                 }}
               >
                 {dot.index + 1}
@@ -434,72 +484,133 @@ const App = () => {
               <div
                 className="text-sm w-32"
                 style={{
-                  wordWrap: "break-word", // Allow the text to wrap to the next line
-                  whiteSpace: "normal", // Ensure text wraps properly
+                  wordWrap: "break-word",
+                  whiteSpace: "normal",
                 }}
               >
-                {leftOuterCircleData[dot.index].technologyName
-                  ? leftOuterCircleData[dot.index].technologyName
-                  : leftOuterCircleData[dot.index].industryName || "N/A"}
+                {leftOuterCircleData1[dot.index].industryName || "N/A"}
               </div>
             </div>
           </div>
         ))}
+      </div>
 
-        {showMiddleCircle &&
-          middleDots.map((dot) => (
+      {/* Second Left Circle */}
+      {interactionStage === "left2" && (
+        <div
+          className="fixed top-0 left-0 h-full w-[432px] rounded-r-full border-2"
+          ref={leftCircleRef2}
+          onMouseDown={handleMouseDownLeft2}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="absolute h-[500px] w-[250px] rounded-r-full border-2 top-32"></div>
+
+          {leftDots2.map((dot) => (
             <div
               key={dot.index}
               className="absolute flex flex-col items-center justify-center cursor-pointer"
               style={{
                 left: `${dot.x}px`,
-                top: `${dot.y + 350}px`,
+                top: `${dot.y + 346}px`,
                 userSelect: "none",
               }}
-              onMouseDown={handleMouseDownMiddle}
-              onClick={() => handleDotClickMiddle(dot.index)}
+              onMouseDown={() => {
+                setIsDraggingLeft2(true);
+                setLastMouseYLeft2(null);
+              }}
+              onClick={() => handleDotClickLeft2(dot.index)}
             >
               <div
-                className={`flex flex-col items-center justify-center ${
-                  dot.index === middleCenterIndex
+                className={`flex flex-row items-center justify-center ${
+                  dot.index === leftCenterIndex2
                     ? "border-blue-500"
                     : "border-black"
                 }`}
                 style={{
-                  textAlign: "center", // Center text below the circle
+                  textAlign: "center",
                 }}
               >
                 <div
                   className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
-                    dot.index === middleCenterIndex ? "border-blue-500" : ""
+                    dot.index === leftCenterIndex2 ? "border-blue-500" : ""
                   }`}
                   style={{
-                    flexShrink: 0, // Prevent shrinking due to text
-                    width: "40px", // Maintain the width
-                    height: "40px", // Maintain the height
+                    flexShrink: 0,
+                    width: "40px",
+                    height: "40px",
                   }}
                 >
                   {dot.index + 1}
                 </div>
                 <div
-                  className="text-sm mt-1"
+                  className="text-sm w-32"
                   style={{
-                    maxWidth: "100px", // Control the width of the text container
-                    wordWrap: "break-word", // Allow the text to wrap to the next line
-                    whiteSpace: "normal", // Ensure text wraps properly
+                    wordWrap: "break-word",
+                    whiteSpace: "normal",
                   }}
                 >
-                  {innerLeftCircleData[dot.index].industryName || "N/A"}
+                  {leftOuterCircleData2[dot.index].technologyName || "N/A"}
                 </div>
               </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
+
+      {/* Middle Circle */}
+      {showMiddleCircle &&
+        middleDots.map((dot) => (
+          <div
+            key={dot.index}
+            className="absolute flex flex-col items-center justify-center cursor-pointer"
+            style={{
+              left: `${dot.x}px`,
+              top: `${dot.y + 350}px`,
+              userSelect: "none",
+            }}
+            onMouseDown={handleMouseDownMiddle}
+            onClick={() => handleDotClickMiddle(dot.index)}
+          >
+            <div
+              className={`flex flex-col items-center justify-center ${
+                dot.index === middleCenterIndex
+                  ? "border-blue-500"
+                  : "border-black"
+              }`}
+              style={{
+                textAlign: "center",
+              }}
+            >
+              <div
+                className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
+                  dot.index === middleCenterIndex ? "border-blue-500" : ""
+                }`}
+                style={{
+                  flexShrink: 0,
+                  width: "40px",
+                  height: "40px",
+                }}
+              >
+                {dot.index + 1}
+              </div>
+              <div
+                className="text-sm mt-1"
+                style={{
+                  maxWidth: "100px",
+                  wordWrap: "break-word",
+                  whiteSpace: "normal",
+                }}
+              >
+                {innerLeftCircleData[dot.index].industryName || "N/A"}
+              </div>
+            </div>
+          </div>
+        ))}
 
       {/* Vertical Line */}
       {openVerticalLine && (
         <div className="flex-1 relative">
-          <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gray-300 transform -translate-x-1/2"></div>
+          <div className="absolute left-1/2 top-0 h-full w-1 bg-gray-300 transform -translate-x-1/2"></div>
 
           {verticalDotsData.map((data, index) => (
             <div
@@ -508,15 +619,16 @@ const App = () => {
               style={{
                 left: "50%",
                 transform: "translateX(-50%)",
-                top: `${(index / verticalDotsData.length) * 100}%`,
-                marginTop: "84px",
+                top: `${(index / verticalDotsData.length) * 60 + 5}%`, // Adjust the top position
+                marginTop: "10px", // Ensure the dots are closer to the top
               }}
               onClick={handleVerticalDotClick}
             >
               <div
-                className="text-xs"
+                className="text-xs absolute left-full ml-4" // Position text beside the dot
                 style={{
-                  textAlign: "center",
+                  textAlign: "left",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {data.useCaseTitle || "N/A"}
@@ -559,7 +671,7 @@ const App = () => {
                     : "border-black"
                 }`}
                 style={{
-                  textAlign: "center", // Center text below the circle
+                  textAlign: "center",
                 }}
               >
                 <div
@@ -567,9 +679,9 @@ const App = () => {
                     dot.index === rightCenterIndex ? "border-blue-500" : ""
                   }`}
                   style={{
-                    flexShrink: 0, // Prevent shrinking due to text
-                    width: "40px", // Maintain the width
-                    height: "40px", // Maintain the height
+                    flexShrink: 0,
+                    width: "40px",
+                    height: "40px",
                   }}
                 >
                   {dot.index + 1}
@@ -577,9 +689,9 @@ const App = () => {
                 <div
                   className="text-sm mt-1"
                   style={{
-                    maxWidth: "100px", // Control the width of the text container
-                    wordWrap: "break-word", // Allow the text to wrap to the next line
-                    whiteSpace: "normal", // Ensure text wraps properly
+                    maxWidth: "100px",
+                    wordWrap: "break-word",
+                    whiteSpace: "normal",
                   }}
                 >
                   {firstRightCircleData[dot.index].technologyName || "N/A"}
@@ -615,15 +727,25 @@ const App = () => {
               onClick={() => handleDotClickSecondRight(dot.index)}
             >
               <div
-                className={`flex flex-col items-center justify-center ${
+                className={`flex flex-row gap-4 items-center justify-center ${
                   dot.index === secondRightCenterIndex
                     ? "border-blue-500"
                     : "border-black"
                 }`}
                 style={{
-                  textAlign: "center", // Center text below the circle
+                  textAlign: "center",
                 }}
               >
+                <div
+                  className="text-sm mt-1"
+                  style={{
+                    maxWidth: "100px",
+                    wordWrap: "break-word",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  {secondRightCircleData[dot.index].companyName || "N/A"}
+                </div>
                 <div
                   className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
                     dot.index === secondRightCenterIndex
@@ -631,22 +753,12 @@ const App = () => {
                       : ""
                   }`}
                   style={{
-                    flexShrink: 0, // Prevent shrinking due to text
-                    width: "40px", // Maintain the width
-                    height: "40px", // Maintain the height
+                    flexShrink: 0,
+                    width: "40px",
+                    height: "40px",
                   }}
                 >
                   {dot.index + 1}
-                </div>
-                <div
-                  className="text-sm mt-1"
-                  style={{
-                    maxWidth: "100px", // Control the width of the text container
-                    wordWrap: "break-word", // Allow the text to wrap to the next line
-                    whiteSpace: "normal", // Ensure text wraps properly
-                  }}
-                >
-                  {secondRightCircleData[dot.index].startupName || "N/A"}
                 </div>
               </div>
             </div>

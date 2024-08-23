@@ -5,27 +5,35 @@ const App = () => {
   const sectors = sectorData.sectors;
 
   const getSectorData = (path) => {
-    return sectors.flatMap(
-      (sector) =>
-        sector.industries?.flatMap(
-          (industry) =>
-            industry.technologies?.flatMap((tech) =>
-              path === "use_cases"
-                ? tech.technologyName === "Generative AI" ||
-                  tech.technologyName === "Next-Generation Software Development"
-                  ? tech.useCases?.map((useCase) => ({
-                      sectorName: sector.sectorName,
-                      industryName: industry.industryName,
-                      technologyName: tech.technologyName,
-                      useCaseTitle: useCase.useCaseTitle,
-                      useCaseDescription: useCase.useCaseDescription,
-                      referenceSource: useCase.referenceSource,
-                      associatedStartups: useCase.associatedStartups,
-                    })) || []
-                  : []
-                : []
-            ) || []
-        ) || []
+    return sectors.flatMap((sector) =>
+      path === "industries"
+        ? sector.industries?.map((industry) => ({
+            sectorName: sector.sectorName,
+            industryName: industry.industryName,
+          })) || []
+        : path === "technologies"
+        ? sector.industries?.flatMap(
+            (industry) =>
+              industry.technologies?.map((tech) => ({
+                sectorName: sector.sectorName,
+                industryName: industry.industryName,
+                technologyName: tech.technologyName,
+              })) || []
+          ) || []
+        : path === "use_cases"
+        ? sector.industries?.flatMap(
+            (industry) =>
+              industry.technologies?.flatMap(
+                (tech) =>
+                  tech.useCases?.map((useCase) => ({
+                    sectorName: sector.sectorName,
+                    industryName: industry.industryName,
+                    technologyName: tech.technologyName,
+                    useCaseTitle: useCase.useCaseTitle,
+                  })) || []
+              ) || []
+          ) || []
+        : sector.name
     );
   };
 

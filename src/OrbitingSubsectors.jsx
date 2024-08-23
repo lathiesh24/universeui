@@ -1,71 +1,76 @@
 import React, { useState, useEffect, useRef } from "react";
+import sectorData from "./data/sector_data.json"; // Assuming the JSON file is stored here
 
 const App = () => {
-  const totalDots = 3; // Total number of dots
-  const anglePerDot = (2 * Math.PI) / totalDots; // Angle per dot
+  const sectors = sectorData.sectors;
 
-  const industryNames = [
-    "Technology",
-    "Healthcare",
-    "Finance",
-    "Energy",
-    "Retail",
-    "Automotive",
-    "Telecom",
-    "Education",
-    "Real Estate",
-    "Food & Beverage",
-    "Pharmaceuticals",
-    "Aerospace",
-  ];
+  const getSectorData = (path) => {
+    return sectors.flatMap((sector) =>
+      path === "industries"
+        ? sector.industries?.map((industry) => ({
+            sectorName: sector.sectorName,
+            industryName: industry.industryName,
+          })) || []
+        : path === "technologies"
+        ? sector.industries?.flatMap(
+            (industry) =>
+              industry.technologies?.map((tech) => ({
+                sectorName: sector.sectorName,
+                industryName: industry.industryName,
+                technologyName: tech.technologyName,
+              })) || []
+          ) || []
+        : path === "use_cases"
+        ? sector.industries?.flatMap(
+            (industry) =>
+              industry.technologies?.flatMap(
+                (tech) =>
+                  tech.useCases?.map((useCase) => ({
+                    sectorName: sector.sectorName,
+                    industryName: industry.industryName,
+                    technologyName: tech.technologyName,
+                    useCaseTitle: useCase.useCaseTitle,
+                  })) || []
+              ) || []
+          ) || []
+        : sector.name
+    );
+  };
 
-  // Initial data for the middle left circle
-  const initialMiddleIndustryNames = [
-    "Agriculture",
-    "Construction",
-    "Fashion",
-    "Hospitality",
-    "Logistics",
-    "Media",
-    "Mining",
-    "Publishing",
-    "Software",
-    "Tourism",
-    "Transportation",
-    "Utilities",
-  ];
+  const [leftOuterCircleData, setLeftOuterCircleData] = useState(
+    getSectorData("industries")
+  );
 
-  // Data for the first right semicircle
-  const firstRightIndustryNames = [
-    "Manufacturing",
-    "Biotechnology",
-    "Insurance",
-    "Banking",
-    "Consulting",
-    "Legal",
-    "Marketing",
-    "Technology Services",
-    "Government",
-    "Non-Profit",
-    "Entertainment",
-    "Sports",
-  ];
+  const [firstRightCircleData, setFirstRightCircleData] = useState(
+    getSectorData("technologies")
+  );
+  const [innerLeftCircleData, setInnerLeftCircleData] = useState([]);
+  const verticalDotsData = getSectorData("use_cases");
+  const secondRightCircleData = sectors.flatMap((sector) =>
+    sector.industries?.flatMap((industry) =>
+      industry.technologies?.flatMap((tech) =>
+        tech.useCases?.flatMap((useCase) =>
+          useCase.associatedStartups.map((startup) => ({
+            sectorName: sector.sectorName,
+            industryName: industry.industryName,
+            technologyName: tech.technologyName,
+            useCaseTitle: useCase.useCaseTitle,
+            startupName: startup,
+          }))
+        )
+      )
+    )
+  );
 
-  // Data for the second right semicircle
-  const secondRightIndustryNames = [
-    "Transportation",
-    "Supply Chain",
-    "Tourism",
-    "Agriculture",
-    "Television",
-    "Music",
-    "Publishing",
-    "Telecommunications",
-    "Architecture",
-    "Urban Planning",
-    "Environment",
-    "Forestry",
-  ];
+  const totalLeftDots = leftOuterCircleData.length;
+  const totalMiddleDots = innerLeftCircleData.length;
+  const totalRightDots = firstRightCircleData.length;
+  const totalSecondRightDots = secondRightCircleData.length;
+
+  const anglePerDotLeft = (2 * Math.PI) / totalLeftDots;
+  const anglePerDotMiddle = (2 * Math.PI) / totalMiddleDots;
+  const anglePerDotRight = (2 * Math.PI) / totalRightDots;
+  const anglePerDotSecondRight = (2 * Math.PI) / totalSecondRightDots;
 
   const [leftAngleOffset, setLeftAngleOffset] = useState(Math.PI / 2);
   const [middleAngleOffset, setMiddleAngleOffset] = useState(Math.PI / 2);
@@ -82,13 +87,11 @@ const App = () => {
   const [lastMouseYRight, setLastMouseYRight] = useState(null);
   const [lastMouseYSecondRight, setLastMouseYSecondRight] = useState(null);
   const [openVerticalLine, setOpenVerticalLine] = useState(false);
-  const [rightSemicircleOpen, setRightSemicircleOpen] = useState(false); // State for right semicircle visibility
+  const [rightSemicircleOpen, setRightSemicircleOpen] = useState(false);
   const [useSecondRightSemicircle, setUseSecondRightSemicircle] =
-    useState(false); // State to switch between first and second right semicircles
-  const [showMiddleCircle, setShowMiddleCircle] = useState(false); // State to control middle circle visibility
-  const [middleIndustryNames, setMiddleIndustryNames] = useState(
-    initialMiddleIndustryNames
-  ); // State to control the data in the middle circle
+    useState(false);
+  const [showMiddleCircle, setShowMiddleCircle] = useState(false);
+  const [interactionStage, setInteractionStage] = useState("left");
 
   const leftCircleRef = useRef(null);
   const middleCircleRef = useRef(null);
@@ -232,59 +235,101 @@ const App = () => {
   };
 
   const handleDotClickLeft = (dotIndex) => {
-    handleDotClick(dotIndex, setLeftAngleOffset, leftAngleOffset);
-    handleOpenVerticalLine(dotIndex);
-  };
-
-  const handleDotClickMiddle = (dotIndex) => {
-    handleDotClick(dotIndex, setMiddleAngleOffset, middleAngleOffset);
-  };
-
-  const handleOpenVerticalLine = (dotIndex) => {
-    if (dotIndex === leftCenterIndex) {
-      setOpenVerticalLine(true); // Open the vertical line dots on first click
+    if (interactionStage === "left") {
+      handleDotClick(
+        dotIndex,
+        setLeftAngleOffset,
+        leftAngleOffset,
+        totalLeftDots
+      );
+      if (!rightSemicircleOpen) {
+        // Open the right semicircle on the first click
+        setRightSemicircleOpen(true);
+        setInteractionStage("right");
+      } else if (interactionStage === "right") {
+        // Open the vertical line for use cases after data swap
+        setOpenVerticalLine(true);
+        setInteractionStage("vertical");
+      }
+    } else if (interactionStage === "vertical") {
+      handleDotClick(
+        dotIndex,
+        setLeftAngleOffset,
+        leftAngleOffset,
+        totalLeftDots
+      );
     }
   };
 
-  const handleVerticalDotClick = () => {
-    setRightSemicircleOpen(true); // Open the first right semicircle when a vertical line dot is clicked
+  const handleDotClickMiddle = (dotIndex) => {
+    handleDotClick(
+      dotIndex,
+      setMiddleAngleOffset,
+      middleAngleOffset,
+      totalMiddleDots
+    );
   };
 
-  const handleRightSemicircleClick = () => {
-    setMiddleIndustryNames(firstRightIndustryNames); // Move data from the first right semicircle to the middle semicircle
-    setShowMiddleCircle(true); // Show the middle circle
-    setUseSecondRightSemicircle(true); // Show the second right semicircle
+  const handleVerticalDotClick = () => {
+    setUseSecondRightSemicircle(true);
   };
 
   const handleDotClickRight = (dotIndex) => {
-    handleDotClick(dotIndex, setRightAngleOffset, rightAngleOffset);
-    handleRightSemicircleClick(); // Move data and show the second right semicircle on first right semicircle click
+    if (interactionStage === "right") {
+      handleDotClick(
+        dotIndex,
+        setRightAngleOffset,
+        rightAngleOffset,
+        totalRightDots
+      );
+
+      // Move the entire right semicircle data to the left outer semicircle
+      setLeftOuterCircleData(firstRightCircleData);
+
+      // Move the current left outer circle data to the left inner circle
+      setInnerLeftCircleData(leftOuterCircleData);
+
+      // Hide the right semicircle
+      setRightSemicircleOpen(false);
+
+      // Show the inner left semicircle
+      setShowMiddleCircle(true);
+
+      // Update the interaction stage to "vertical" to handle opening vertical dots
+      setInteractionStage("vertical");
+    }
   };
 
   const handleDotClickSecondRight = (dotIndex) => {
-    handleDotClick(dotIndex, setSecondRightAngleOffset, secondRightAngleOffset);
+    handleDotClick(
+      dotIndex,
+      setSecondRightAngleOffset,
+      secondRightAngleOffset,
+      totalSecondRightDots
+    );
   };
 
-  const handleDotClick = (dotIndex, setAngleOffset, angleOffset) => {
+  const handleDotClick = (dotIndex, setAngleOffset, angleOffset, totalDots) => {
     const normalizedAngleOffset =
       ((angleOffset % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
 
     const currentCenterIndex = Math.round(
-      ((Math.PI / 2 - normalizedAngleOffset) / anglePerDot + totalDots) %
+      ((Math.PI / 2 - normalizedAngleOffset) / anglePerDotLeft + totalDots) %
         totalDots
     );
 
     const distance = (dotIndex - currentCenterIndex + totalDots) % totalDots;
     const shortestDistance =
       distance <= totalDots / 2 ? distance : distance - totalDots;
-    const angleDifference = shortestDistance * anglePerDot;
+    const angleDifference = shortestDistance * anglePerDotLeft;
     setAngleOffset((prevOffset) => prevOffset - angleDifference);
   };
 
   const radiusX = 410;
   const radiusY = 378;
-  const leftDots = Array.from({ length: totalDots }).map((_, index) => {
-    const angle = (index / totalDots) * Math.PI * 2 + leftAngleOffset;
+
+  const leftDots = Array.from({ length: totalLeftDots }).map((_, index) => {
+    const angle = (index / totalLeftDots) * Math.PI * 2 + leftAngleOffset;
     const x = radiusX * Math.sin(angle);
     const y = radiusY * Math.cos(angle);
     return { x, y, index };
@@ -292,52 +337,59 @@ const App = () => {
 
   const middleRadiusX = 230;
   const middleRadiusY = 248;
-  const middleDots = Array.from({ length: totalDots }).map((_, index) => {
-    const angle = (index / totalDots) * Math.PI * 2 + middleAngleOffset;
+  const middleDots = Array.from({ length: totalMiddleDots }).map((_, index) => {
+    const angle = (index / totalMiddleDots) * Math.PI * 2 + middleAngleOffset;
     const x = middleRadiusX * Math.sin(angle);
     const y = middleRadiusY * Math.cos(angle);
     return { x, y, index };
   });
 
-  const rightDots = Array.from({ length: totalDots }).map((_, index) => {
-    const angle = (index / totalDots) * Math.PI * 2 + rightAngleOffset;
+  const rightDots = Array.from({ length: totalRightDots }).map((_, index) => {
+    const angle = (index / totalRightDots) * Math.PI * 2 + rightAngleOffset;
     const x = radiusX * Math.sin(angle);
     const y = radiusY * Math.cos(angle);
     return { x, y, index };
   });
 
-  const secondRightDots = Array.from({ length: totalDots }).map((_, index) => {
-    const angle = (index / totalDots) * Math.PI * 2 + secondRightAngleOffset;
-    const x = radiusX * Math.sin(angle);
-    const y = radiusY * Math.cos(angle);
-    return { x, y, index };
-  });
+  const secondRightDots = Array.from({ length: totalSecondRightDots }).map(
+    (_, index) => {
+      const angle =
+        (index / totalSecondRightDots) * Math.PI * 2 + secondRightAngleOffset;
+      const x = radiusX * Math.sin(angle);
+      const y = radiusY * Math.cos(angle);
+      return { x, y, index };
+    }
+  );
 
   const leftCenterIndex = Math.round(
-    ((Math.PI / 2 - leftAngleOffset) / anglePerDot + totalDots) % totalDots
+    ((Math.PI / 2 - leftAngleOffset) / anglePerDotLeft + totalLeftDots) %
+      totalLeftDots
   );
   const middleCenterIndex = Math.round(
-    ((Math.PI / 2 - middleAngleOffset) / anglePerDot + totalDots) % totalDots
+    ((Math.PI / 2 - middleAngleOffset) / anglePerDotMiddle + totalMiddleDots) %
+      totalMiddleDots
   );
   const rightCenterIndex = Math.round(
-    ((Math.PI / 2 - rightAngleOffset) / anglePerDot + totalDots) % totalDots
+    ((Math.PI / 2 - rightAngleOffset) / anglePerDotRight + totalRightDots) %
+      totalRightDots
   );
   const secondRightCenterIndex = Math.round(
-    ((Math.PI / 2 - secondRightAngleOffset) / anglePerDot + totalDots) %
-      totalDots
+    ((Math.PI / 2 - secondRightAngleOffset) / anglePerDotSecondRight +
+      totalSecondRightDots) %
+      totalSecondRightDots
   );
 
   return (
     <div className="flex h-screen overflow-hidden">
+      {/* Left Circle */}
       <div
-        className="relative h-full w-[432px] rounded-r-full border-2"
+        className="fixed top-0 left-0 h-full w-[432px] rounded-r-full border-2"
         ref={leftCircleRef}
         onMouseDown={handleMouseDownLeft}
         onClick={(event) => event.stopPropagation()}
       >
         <div className="absolute h-[500px] w-[250px] rounded-r-full border-2 top-32"></div>
 
-        {/* Conditionally render the middle circle based on state */}
         {showMiddleCircle && (
           <div className="absolute h-[300px] w-[150px] rounded-r-full bg-blue-300 shadow-md top-[232px]"></div>
         )}
@@ -358,25 +410,42 @@ const App = () => {
             onClick={() => handleDotClickLeft(dot.index)}
           >
             <div
-              className={`flex gap-4 flex-row ${
+              className={`flex flex-row items-center justify-center ${
                 dot.index === leftCenterIndex
                   ? "border-blue-500"
                   : "border-black"
               }`}
+              style={{
+                textAlign: "center", // Center text below the circle
+              }}
             >
               <div
                 className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
                   dot.index === leftCenterIndex ? "border-blue-500" : ""
                 }`}
+                style={{
+                  flexShrink: 0, // Prevent shrinking due to text
+                  width: "40px", // Maintain the width
+                  height: "40px", // Maintain the height
+                }}
               >
                 {dot.index + 1}
               </div>
-              <div className="text-sm mt-2">{industryNames[dot.index]}</div>
+              <div
+                className="text-sm w-32"
+                style={{
+                  wordWrap: "break-word", // Allow the text to wrap to the next line
+                  whiteSpace: "normal", // Ensure text wraps properly
+                }}
+              >
+                {leftOuterCircleData[dot.index].technologyName
+                  ? leftOuterCircleData[dot.index].technologyName
+                  : leftOuterCircleData[dot.index].industryName || "N/A"}
+              </div>
             </div>
           </div>
         ))}
 
-        {/* Conditionally render the middle circle's dots */}
         {showMiddleCircle &&
           middleDots.map((dot) => (
             <div
@@ -391,56 +460,79 @@ const App = () => {
               onClick={() => handleDotClickMiddle(dot.index)}
             >
               <div
-                className={`flex gap-4 flex-row ${
+                className={`flex flex-col items-center justify-center ${
                   dot.index === middleCenterIndex
                     ? "border-blue-500"
                     : "border-black"
                 }`}
+                style={{
+                  textAlign: "center", // Center text below the circle
+                }}
               >
                 <div
                   className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
                     dot.index === middleCenterIndex ? "border-blue-500" : ""
                   }`}
+                  style={{
+                    flexShrink: 0, // Prevent shrinking due to text
+                    width: "40px", // Maintain the width
+                    height: "40px", // Maintain the height
+                  }}
                 >
                   {dot.index + 1}
                 </div>
-                <div className="text-sm mt-2">
-                  {middleIndustryNames[dot.index]}
+                <div
+                  className="text-sm mt-1"
+                  style={{
+                    maxWidth: "100px", // Control the width of the text container
+                    wordWrap: "break-word", // Allow the text to wrap to the next line
+                    whiteSpace: "normal", // Ensure text wraps properly
+                  }}
+                >
+                  {innerLeftCircleData[dot.index].industryName || "N/A"}
                 </div>
               </div>
             </div>
           ))}
       </div>
 
+      {/* Vertical Line */}
       {openVerticalLine && (
         <div className="flex-1 relative">
           <div className="absolute left-1/2 top-0 bottom-0 w-1 bg-gray-300 transform -translate-x-1/2"></div>
 
-          {Array.from({ length: 7 }).map((_, index) => (
+          {verticalDotsData.map((data, index) => (
             <div
               key={index}
               className="absolute bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer"
               style={{
                 left: "50%",
                 transform: "translateX(-50%)",
-                top: `${(index / 8) * 100}%`,
+                top: `${(index / verticalDotsData.length) * 100}%`,
                 marginTop: "84px",
               }}
               onClick={handleVerticalDotClick}
             >
-              {index + 1}
+              <div
+                className="text-xs"
+                style={{
+                  textAlign: "center",
+                }}
+              >
+                {data.useCaseTitle || "N/A"}
+              </div>
             </div>
           ))}
         </div>
       )}
 
+      {/* Right Circle */}
       {rightSemicircleOpen && !useSecondRightSemicircle && (
         <div
-          className="relative h-full w-[375px] rounded-l-full border-2"
+          className="fixed top-0 right-0 h-full w-[375px] rounded-l-full border-2"
           ref={rightCircleRef}
           onMouseDown={handleMouseDownRight}
           onClick={(event) => {
-            handleRightSemicircleClick();
             event.stopPropagation();
           }}
         >
@@ -461,21 +553,36 @@ const App = () => {
               onClick={() => handleDotClickRight(dot.index)}
             >
               <div
-                className={`flex gap-4 flex-row-reverse ${
+                className={`flex flex-col items-center justify-center ${
                   dot.index === rightCenterIndex
                     ? "border-blue-500"
                     : "border-black"
                 }`}
+                style={{
+                  textAlign: "center", // Center text below the circle
+                }}
               >
                 <div
                   className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
                     dot.index === rightCenterIndex ? "border-blue-500" : ""
                   }`}
+                  style={{
+                    flexShrink: 0, // Prevent shrinking due to text
+                    width: "40px", // Maintain the width
+                    height: "40px", // Maintain the height
+                  }}
                 >
                   {dot.index + 1}
                 </div>
-                <div className="text-sm mt-2">
-                  {firstRightIndustryNames[dot.index]}
+                <div
+                  className="text-sm mt-1"
+                  style={{
+                    maxWidth: "100px", // Control the width of the text container
+                    wordWrap: "break-word", // Allow the text to wrap to the next line
+                    whiteSpace: "normal", // Ensure text wraps properly
+                  }}
+                >
+                  {firstRightCircleData[dot.index].technologyName || "N/A"}
                 </div>
               </div>
             </div>
@@ -483,9 +590,10 @@ const App = () => {
         </div>
       )}
 
+      {/* Second Right Circle */}
       {useSecondRightSemicircle && (
         <div
-          className="relative h-full w-[375px] rounded-l-full border-2"
+          className="fixed top-0 right-0 h-full w-[375px] rounded-l-full border-2"
           ref={secondRightCircleRef}
           onMouseDown={handleMouseDownSecondRight}
           onClick={(event) => event.stopPropagation()}
@@ -507,11 +615,14 @@ const App = () => {
               onClick={() => handleDotClickSecondRight(dot.index)}
             >
               <div
-                className={`flex gap-4 flex-row-reverse ${
+                className={`flex flex-col items-center justify-center ${
                   dot.index === secondRightCenterIndex
                     ? "border-blue-500"
                     : "border-black"
                 }`}
+                style={{
+                  textAlign: "center", // Center text below the circle
+                }}
               >
                 <div
                   className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
@@ -519,11 +630,23 @@ const App = () => {
                       ? "border-blue-500"
                       : ""
                   }`}
+                  style={{
+                    flexShrink: 0, // Prevent shrinking due to text
+                    width: "40px", // Maintain the width
+                    height: "40px", // Maintain the height
+                  }}
                 >
                   {dot.index + 1}
                 </div>
-                <div className="text-sm mt-2">
-                  {secondRightIndustryNames[dot.index]}
+                <div
+                  className="text-sm mt-1"
+                  style={{
+                    maxWidth: "100px", // Control the width of the text container
+                    wordWrap: "break-word", // Allow the text to wrap to the next line
+                    whiteSpace: "normal", // Ensure text wraps properly
+                  }}
+                >
+                  {secondRightCircleData[dot.index].startupName || "N/A"}
                 </div>
               </div>
             </div>

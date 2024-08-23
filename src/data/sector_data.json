@@ -1,0 +1,189 @@
+{
+    "sectors": [
+        {
+            "sectorName": "Energy"
+        },
+        {
+            "sectorName": "Materials"
+        },
+        {
+            "sectorName": "Industrials"
+        },
+        {
+            "sectorName": "Consumer Discretionary"
+        },
+        {
+            "sectorName": "Consumer Staples"
+        },
+        {
+            "sectorName": "Healthcare"
+        },
+        {
+            "sectorName": "Banking, Financial Service & Insurance",
+            "industries": [
+                {
+                    "industryName": "Diversified Banks"
+                },
+                {
+                    "industryName": "Regional Banks"
+                },
+                {
+                    "industryName": "Consumer Finance"
+                },
+                {
+                    "industryName": "Diversified Financial Services"
+                },
+                {
+                    "industryName": "Multi-Sector Holdings"
+                },
+                {
+                    "industryName": "Specialized Finance"
+                },
+                {
+                    "industryName": "Commercial & Residential Mortgage Finance"
+                },
+                {
+                    "industryName": "Transaction & Payment Processing Services"
+                },
+                {
+                    "industryName": "Consumer Finance"
+                },
+                {
+                    "industryName": "Asset Management & Custody Banks"
+                },
+                {
+                    "industryName": "Investment Banking & Brokerage"
+                },
+                {
+                    "industryName": "Diversified Capital Markets"
+                },
+                {
+                    "industryName": "Financial Exchanges & Data"
+                },
+                {
+                    "industryName": "Mortgage REITs"
+                },
+                {
+                    "industryName": "Insurance Brokers"
+                },
+                {
+                    "industryName": "Life & Health Insurance",
+                    "technologies": [
+                        {
+                            "technologyName": "Generative AI",
+                            "useCases": [
+                                {
+                                    "useCaseTitle": "Predictive Underwriting",
+                                    "useCaseDescription": "Use AI to assess risks accurately, reducing underwriting time by 50% and improving accuracy by 30%.",
+                                    "referenceSource": "McKinsey",
+                                    "associatedStartups": [
+                                        "Zest AI",
+                                        "Lapetus Solutions",
+                                        "UnderwriteMe",
+                                        "Akur8",
+                                        "Flyreel"
+                                    ]
+                                },
+                                {
+                                    "useCaseTitle": "Fraud Detection in Claims",
+                                    "useCaseDescription": "Implement machine learning to identify fraudulent claims, potentially reducing fraud by up to 75%.",
+                                    "referenceSource": "Gartner",
+                                    "associatedStartups": [
+                                        "Shift Technology",
+                                        "Friss",
+                                        "Snapsheet",
+                                        "Insurify",
+                                        "Clara Analytics"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "technologyName": "Next-Generation Software Development",
+                            "useCases": [
+                                {
+                                    "useCaseTitle": "Predictive Underwriting",
+                                    "useCaseDescription": "Use AI to assess risks accurately, reducing underwriting time by 50% and improving accuracy by 30%.",
+                                    "referenceSource": "McKinsey",
+                                    "associatedStartups": [
+                                        "Zest AI",
+                                        "Lapetus Solutions",
+                                        "UnderwriteMe",
+                                        "Akur8",
+                                        "Flyreel"
+                                    ]
+                                },
+                                {
+                                    "useCaseTitle": "Fraud Detection in Claims",
+                                    "useCaseDescription": "Implement machine learning to identify fraudulent claims, potentially reducing fraud by up to 75%.",
+                                    "referenceSource": "Gartner",
+                                    "associatedStartups": [
+                                        "Shift Technology",
+                                        "Friss",
+                                        "Snapsheet",
+                                        "Insurify",
+                                        "Clara Analytics"
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "technologyName": "Applied AI"
+                        },
+                        {
+                            "technologyName": "Industrializing Machine Learning (MLOps)"
+                        },
+                        {
+                            "technologyName": "Digital Trust and Cybersecurity"
+                        },
+                        {
+                            "technologyName": "Advanced Connectivity (IoT and 5G)"
+                        },
+                        {
+                            "technologyName": "Cloud and Edge Computing"
+                        },
+                        {
+                            "technologyName": "Immersive Reality Technologies"
+                        },
+                        {
+                            "technologyName": "Quantum Technologies"
+                        },
+                        {
+                            "technologyName": "Climate Technologies"
+                        },
+                        {
+                            "technologyName": "Distributed Infrastructure"
+                        },
+                        {
+                            "technologyName": "Trust Architecture (Blockchain and Zero-Trust Security)"
+                        },
+                        {
+                            "technologyName": "Next-Level Process Automation"
+                        }
+                    ]
+                },
+                {
+                    "industryName": "Multi-line Insurance"
+                },
+                {
+                    "industryName": "Property & Casualty Insurance"
+                },
+                {
+                    "industryName": "Reinsurance"
+                }
+            ]
+        },
+        {
+            "sectorName": "Information Technology"
+        },
+        {
+            "sectorName": "Communication Services"
+        },
+        {
+            "sectorName": "Utilities"
+        },
+        {
+            "sectorName": "Real Estate"
+        }
+    ]
+}

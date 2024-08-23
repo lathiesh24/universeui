@@ -11,9 +11,9 @@ import Practice from './Practice.jsx';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-   {/* <OrbitingSubsectors/>
-   <MobileOrbit/> */}
-   <Practice/>
+   <OrbitingSubsectors/>
+   {/* <MobileOrbit/>
+   <Practice/> */}
   </React.StrictMode>
 );
 

@@ -4,93 +4,91 @@ import sectorData from "./data/sector_data.json"; // Assuming the JSON file is s
 const App = () => {
   const sectors = sectorData.sectors;
 
-  const getSectorData = (path) => {
-    return sectors.flatMap((sector) =>
-      path === "industries"
-        ? sector.industries?.map((industry) => ({
-            sectorName: sector.sectorName,
-            industryName: industry.industryName,
-          })) || []
-        : path === "technologies"
-        ? sector.industries?.flatMap(
-            (industry) =>
-              industry.technologies?.map((tech) => ({
-                sectorName: sector.sectorName,
-                industryName: industry.industryName,
-                technologyName: tech.technologyName,
-              })) || []
-          ) || []
-        : path === "use_cases"
-        ? sector.industries?.flatMap(
-            (industry) =>
-              industry.technologies?.flatMap(
-                (tech) =>
-                  tech.useCases?.map((useCase) => ({
-                    sectorName: sector.sectorName,
-                    industryName: industry.industryName,
-                    technologyName: tech.technologyName,
-                    useCaseTitle: useCase.useCaseTitle,
-                  })) || []
-              ) || []
-          ) || []
-        : sector.name
-    );
+  // Function to get industry data for the left outer circle initially
+  const getInitialIndustryData = () => {
+    const bfsiSector = sectors.find((sector) => sector.sectorId === "bfsi");
+
+    return bfsiSector
+      ? bfsiSector.industries.map((industry) => ({
+          sectorName: bfsiSector.sectorName,
+          industryName: industry.industryName,
+          technologies: industry.technologies || [],
+        }))
+      : [];
   };
 
+  // Function to get technology data for the right circle
+  const getTechnologyData = () => {
+    const lifeHealthInsurance = getInitialIndustryData().find(
+      (industry) => industry.industryName === "Life & Health Insurance"
+    );
+
+    return lifeHealthInsurance
+      ? lifeHealthInsurance.technologies.map((tech) => ({
+          sectorName: "Banking, Financial Service & Insurance",
+          industryName: "Life & Health Insurance",
+          technologyName: tech.technologyName,
+          useCases: tech.useCases || [],
+        }))
+      : [];
+  };
+
+  // Function to get use cases for vertical dots
+  const getUseCaseData = (technologyName) => {
+    const selectedTech = getTechnologyData().find(
+      (tech) => tech.technologyName === technologyName
+    );
+
+    return selectedTech ? selectedTech.useCases : [];
+  };
+
+  // Function to get startups for the second right semicircle
+  const getStartupData = (useCaseId) => {
+    const allUseCases = getTechnologyData().flatMap(
+      (tech) => tech.useCases || []
+    );
+
+    const selectedUseCase = allUseCases.find(
+      (useCase) => useCase.useCaseId === useCaseId
+    );
+
+    return selectedUseCase
+      ? selectedUseCase.startups.map((startup) => ({
+          companyName: startup,
+          description: selectedUseCase.description,
+        }))
+      : [];
+  };
+
+  // State initialization
   const [leftOuterCircleData1, setLeftOuterCircleData1] = useState(
-    getSectorData("industries")
+    getInitialIndustryData()
   );
   const [leftOuterCircleData2, setLeftOuterCircleData2] = useState([]);
   const [innerLeftCircleData, setInnerLeftCircleData] = useState([]);
-  const [firstRightCircleData, setFirstRightCircleData] = useState(
-    getSectorData("technologies")
-  );
-  const [verticalDotsData, setVerticalDotsData] = useState(
-    getSectorData("use_cases")
-  );
-  const secondRightCircleData = [
-    {
-      companyName: "Zest AI",
-      description:
-        "Specializes in using machine learning to improve credit underwriting models, helping insurers predict risks more accurately.",
-    },
-    {
-      companyName: "Lapetus Solutions",
-      description:
-        "Offers facial analytics and biometric solutions to enhance life insurance underwriting processes.",
-    },
-    {
-      companyName: "UnderwriteMe",
-      description:
-        "Provides a rules engine that uses data and analytics to streamline and predict underwriting decisions.",
-    },
-    {
-      companyName: "Akur8",
-      description:
-        "Uses AI to automate insurance pricing and underwriting, improving speed and accuracy.",
-    },
-    {
-      companyName: "Flyreel",
-      description:
-        "Utilizes AI to assess property conditions and risks for underwriting, enhancing predictive accuracy.",
-    },
-  ];
+  const [verticalDotsData, setVerticalDotsData] = useState([]);
+  const [secondRightCircleData, setSecondRightCircleData] = useState([]);
+  const [rightCircleData, setRightCircleData] = useState(getTechnologyData());
 
+  // Angle and dragging state management
   const totalLeftDots1 = leftOuterCircleData1.length;
   const totalLeftDots2 = leftOuterCircleData2.length;
   const totalMiddleDots = innerLeftCircleData.length;
-  const totalRightDots = firstRightCircleData.length;
+  const totalVerticalDots = verticalDotsData.length;
+  const totalRightDots = rightCircleData.length;
   const totalSecondRightDots = secondRightCircleData.length;
 
   const anglePerDotLeft1 = (2 * Math.PI) / totalLeftDots1;
   const anglePerDotLeft2 = (2 * Math.PI) / totalLeftDots2;
   const anglePerDotMiddle = (2 * Math.PI) / totalMiddleDots;
+  const anglePerDotVertical = (2 * Math.PI) / totalVerticalDots;
   const anglePerDotRight = (2 * Math.PI) / totalRightDots;
   const anglePerDotSecondRight = (2 * Math.PI) / totalSecondRightDots;
 
   const [leftAngleOffset1, setLeftAngleOffset1] = useState(Math.PI / 2);
   const [leftAngleOffset2, setLeftAngleOffset2] = useState(Math.PI / 2);
   const [middleAngleOffset, setMiddleAngleOffset] = useState(Math.PI / 2);
+  const [verticalAngleOffset, setVerticalAngleOffset] = useState(Math.PI / 2);
   const [rightAngleOffset, setRightAngleOffset] = useState(Math.PI / 2);
   const [secondRightAngleOffset, setSecondRightAngleOffset] = useState(
     Math.PI / 2
@@ -98,11 +96,13 @@ const App = () => {
   const [isDraggingLeft1, setIsDraggingLeft1] = useState(false);
   const [isDraggingLeft2, setIsDraggingLeft2] = useState(false);
   const [isDraggingMiddle, setIsDraggingMiddle] = useState(false);
+  const [isDraggingVertical, setIsDraggingVertical] = useState(false);
   const [isDraggingRight, setIsDraggingRight] = useState(false);
   const [isDraggingSecondRight, setIsDraggingSecondRight] = useState(false);
   const [lastMouseYLeft1, setLastMouseYLeft1] = useState(null);
   const [lastMouseYLeft2, setLastMouseYLeft2] = useState(null);
   const [lastMouseYMiddle, setLastMouseYMiddle] = useState(null);
+  const [lastMouseYVertical, setLastMouseYVertical] = useState(null);
   const [lastMouseYRight, setLastMouseYRight] = useState(null);
   const [lastMouseYSecondRight, setLastMouseYSecondRight] = useState(null);
   const [openVerticalLine, setOpenVerticalLine] = useState(false);
@@ -115,8 +115,9 @@ const App = () => {
   const leftCircleRef1 = useRef(null);
   const leftCircleRef2 = useRef(null);
   const middleCircleRef = useRef(null);
-  const rightCircleRef = useRef(null);
+  const verticalLineRef = useRef(null);
   const secondRightCircleRef = useRef(null);
+  const rightCircleRef = useRef(null);
 
   useEffect(() => {
     const handleMouseMove = (event) => {
@@ -128,6 +129,9 @@ const App = () => {
       }
       if (isDraggingMiddle) {
         handleMouseMoveMiddle(event);
+      }
+      if (isDraggingVertical) {
+        handleMouseMoveVertical(event);
       }
       if (isDraggingRight) {
         handleMouseMoveRight(event);
@@ -151,6 +155,8 @@ const App = () => {
     lastMouseYLeft2,
     isDraggingMiddle,
     lastMouseYMiddle,
+    isDraggingVertical,
+    lastMouseYVertical,
     isDraggingRight,
     lastMouseYRight,
     isDraggingSecondRight,
@@ -199,6 +205,20 @@ const App = () => {
     }
   };
 
+  const handleMouseMoveVertical = (event) => {
+    if (isDraggingVertical) {
+      const { clientY } = event;
+      if (lastMouseYVertical !== null) {
+        const deltaY = clientY - lastMouseYVertical;
+        const rotationSpeed = 0.005;
+        setVerticalAngleOffset(
+          (prevOffset) => prevOffset - deltaY * rotationSpeed
+        );
+      }
+      setLastMouseYVertical(clientY);
+    }
+  };
+
   const handleMouseMoveRight = (event) => {
     if (isDraggingRight) {
       const { clientY } = event;
@@ -231,11 +251,13 @@ const App = () => {
     setIsDraggingLeft1(false);
     setIsDraggingLeft2(false);
     setIsDraggingMiddle(false);
+    setIsDraggingVertical(false);
     setIsDraggingRight(false);
     setIsDraggingSecondRight(false);
     setLastMouseYLeft1(null);
     setLastMouseYLeft2(null);
     setLastMouseYMiddle(null);
+    setLastMouseYVertical(null);
     setLastMouseYRight(null);
     setLastMouseYSecondRight(null);
   };
@@ -267,6 +289,16 @@ const App = () => {
     ) {
       setIsDraggingMiddle(true);
       setLastMouseYMiddle(event.clientY);
+    }
+  };
+
+  const handleMouseDownVertical = (event) => {
+    if (
+      verticalLineRef.current &&
+      verticalLineRef.current.contains(event.target)
+    ) {
+      setIsDraggingVertical(true);
+      setLastMouseYVertical(event.clientY);
     }
   };
 
@@ -313,6 +345,9 @@ const App = () => {
         totalLeftDots2
       );
       setOpenVerticalLine(true); // Open vertical line
+      const selectedTechName = leftOuterCircleData2[dotIndex].technologyName;
+      const useCaseData = getUseCaseData(selectedTechName);
+      setVerticalDotsData(useCaseData);
     }
   };
 
@@ -325,8 +360,10 @@ const App = () => {
     );
   };
 
-  const handleVerticalDotClick = () => {
+  const handleVerticalDotClick = (useCaseId) => {
     setUseSecondRightSemicircle(true); // Show second right semicircle
+    const startupData = getStartupData(useCaseId);
+    setSecondRightCircleData(startupData);
   };
 
   const handleDotClickRight = (dotIndex) => {
@@ -338,7 +375,7 @@ const App = () => {
         totalRightDots
       );
 
-      setLeftOuterCircleData2(firstRightCircleData); // Move right semicircle data to second left outer semicircle
+      setLeftOuterCircleData2(rightCircleData); // Move right semicircle data to second left outer semicircle
       setInnerLeftCircleData(leftOuterCircleData1); // Move first left outer circle data to inner left circle
       setInteractionStage("left2"); // Transition to the second left outer circle
 
@@ -400,6 +437,16 @@ const App = () => {
     return { x, y, index };
   });
 
+  const verticalDots = Array.from({ length: totalVerticalDots }).map(
+    (_, index) => {
+      const angle =
+        (index / totalVerticalDots) * Math.PI * 2 + verticalAngleOffset;
+      const x = radiusX * Math.sin(angle);
+      const y = radiusY * Math.cos(angle);
+      return { x, y, index };
+    }
+  );
+
   const rightDots = Array.from({ length: totalRightDots }).map((_, index) => {
     const angle = (index / totalRightDots) * Math.PI * 2 + rightAngleOffset;
     const x = radiusX * Math.sin(angle);
@@ -428,6 +475,11 @@ const App = () => {
   const middleCenterIndex = Math.round(
     ((Math.PI / 2 - middleAngleOffset) / anglePerDotMiddle + totalMiddleDots) %
       totalMiddleDots
+  );
+  const verticalCenterIndex = Math.round(
+    ((Math.PI / 2 - verticalAngleOffset) / anglePerDotVertical +
+      totalVerticalDots) %
+      totalVerticalDots
   );
   const rightCenterIndex = Math.round(
     ((Math.PI / 2 - rightAngleOffset) / anglePerDotRight + totalRightDots) %
@@ -620,26 +672,28 @@ const App = () => {
         <div className="flex-1 relative">
           <div className="absolute left-1/2 top-0 h-full w-1 bg-gray-300 transform -translate-x-1/2"></div>
 
-          {verticalDotsData.map((data, index) => (
+          {verticalDots.map((dot, index) => (
             <div
               key={index}
               className="absolute bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center cursor-pointer"
               style={{
                 left: "50%",
                 transform: "translateX(-50%)",
-                top: `${(index / verticalDotsData.length) * 60 + 5}%`, // Adjust the top position
-                marginTop: "10px", // Ensure the dots are closer to the top
+                top: `${(index / verticalDotsData.length) * 60 + 5}%`,
+                marginTop: "10px",
               }}
-              onClick={handleVerticalDotClick}
+              onClick={() =>
+                handleVerticalDotClick(verticalDotsData[index].useCaseId)
+              }
             >
               <div
-                className="text-xs absolute left-full ml-4" // Position text beside the dot
+                className="text-xs absolute left-full ml-4"
                 style={{
                   textAlign: "left",
                   whiteSpace: "nowrap",
                 }}
               >
-                {data.useCaseTitle || "N/A"}
+                {verticalDotsData[index].useCaseTitle || "N/A"}
               </div>
             </div>
           ))}
@@ -665,10 +719,6 @@ const App = () => {
                 right: `${dot.x}px`,
                 top: `${dot.y + 356}px`,
                 userSelect: "none",
-              }}
-              onMouseDown={() => {
-                setIsDraggingRight(true);
-                setLastMouseYRight(null);
               }}
               onClick={() => handleDotClickRight(dot.index)}
             >
@@ -702,7 +752,7 @@ const App = () => {
                     whiteSpace: "normal",
                   }}
                 >
-                  {firstRightCircleData[dot.index].technologyName || "N/A"}
+                  {rightCircleData[dot.index].technologyName || "N/A"}
                 </div>
               </div>
             </div>
@@ -719,7 +769,7 @@ const App = () => {
           onClick={(event) => event.stopPropagation()}
         >
           <div className="absolute h-[500px] w-[250px] rounded-l-full bg-blue-100 shadow-md top-32 right-0"></div>
-          {secondRightDots.map((dot) => (
+          {secondRightDots.map((dot, index) => (
             <div
               key={dot.index}
               className="absolute flex flex-col items-center justify-center cursor-pointer"
@@ -735,7 +785,7 @@ const App = () => {
               onClick={() => handleDotClickSecondRight(dot.index)}
             >
               <div
-                className={`flex flex-row gap-4 items-center justify-center ${
+                className={`flex flex-row-reverse gap-4  items-center justify-center ${
                   dot.index === secondRightCenterIndex
                     ? "border-blue-500"
                     : "border-black"
@@ -744,16 +794,6 @@ const App = () => {
                   textAlign: "center",
                 }}
               >
-                <div
-                  className="text-sm mt-1"
-                  style={{
-                    maxWidth: "100px",
-                    wordWrap: "break-word",
-                    whiteSpace: "normal",
-                  }}
-                >
-                  {secondRightCircleData[dot.index].companyName || "N/A"}
-                </div>
                 <div
                   className={`bg-white shadow-xl border-2 rounded-full w-10 h-10 flex items-center justify-center ${
                     dot.index === secondRightCenterIndex
@@ -767,6 +807,16 @@ const App = () => {
                   }}
                 >
                   {dot.index + 1}
+                </div>
+                <div
+                  className="text-sm mt-1"
+                  style={{
+                    maxWidth: "100px",
+                    wordWrap: "break-word",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  {secondRightCircleData[index].companyName || "N/A"}
                 </div>
               </div>
             </div>

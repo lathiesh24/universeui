@@ -6,6 +6,7 @@ import Practice from "./Practice";
 import Homepage from "./Homepage";
 import CurvedLineUp from "./CurvedLineUp";
 import StartupInfo from "./StartupInfo";
+import Usecases from "./Usecases";
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/practice" element={<Practice />} />
           <Route path="/curved-lineup" element={<CurvedLineUp/>}/>
           <Route path="/startup-info" element={<StartupInfo />} />
+          <Route path="/usecases" element={<Usecases />} />
         </Routes>
       </div>
   );

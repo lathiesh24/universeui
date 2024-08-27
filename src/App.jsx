@@ -5,6 +5,7 @@ import MobileOrbit from "./MobileOrbit";
 import Practice from "./Practice";
 import Homepage from "./Homepage";
 import CurvedLineUp from "./CurvedLineUp";
+import StartupInfo from "./StartupInfo";
 
 const App = () => {
   return (
@@ -15,6 +16,7 @@ const App = () => {
           <Route path="/mobile-orbit" element={<MobileOrbit />} />
           <Route path="/practice" element={<Practice />} />
           <Route path="/curved-lineup" element={<CurvedLineUp/>}/>
+          <Route path="/startup-info" element={<StartupInfo />} />
         </Routes>
       </div>
   );

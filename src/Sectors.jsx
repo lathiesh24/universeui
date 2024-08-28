@@ -1,30 +1,23 @@
 import React, { useState } from "react";
+import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
-const CurvedLineUp = () => {
-  const radius = 200; // Radius of the curve
-  const centerX = radius; // Center the topmost dot horizontally
-  const centerY = 0; // Y position for the topmost dot (you can adjust this for your design)
+const Sectors = () => {
+  const radius = 180; // radius of the circle
+  const centerX = radius; // center of the circle on x-axis
+  const centerY = radius; // center of the circle on y-axis
 
-  // Define the angles for the curve (moving downward to the right)
+  // Extract sector names from the sectors data
+  const sectorNames = sectorsData.sectors.map((sector) => sector.sectorName);
+
+  // Define the fixed positions for the three dots along the curve
   const fixedAngles = [
-    -Math.PI / 2, // Top center (90°)
-    -Math.PI / 4, // Middle right (45°)
-    0, // Bottom right (0°)
+    Math.PI, // Leftmost position (180°)
+    (3 * Math.PI) / 4, // Middle position (135°)
+    Math.PI / 2, // Rightmost position (90°)
   ];
 
-  // Use the provided static text data for the dots
-  const allTexts = [
-    "Dot 1 (180°)",
-    "Dot 2 (135°)",
-    "Dot 3 (90°)",
-    "Dot 4 (45°)",
-    "Dot 5 (0°)",
-    "Dot 6 (-45°)",
-    "Dot 7 (-90°)",
-    "Dot 8 (-135°)",
-    "Dot 9 (-180°)",
-    "Dot 10 (-225°)",
-  ];
+  // Use the sector names for the text data
+  const allTexts = sectorNames;
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startX, setStartX] = useState(null);
@@ -68,24 +61,29 @@ const CurvedLineUp = () => {
 
   return (
     <div
-      className="relative  bg-gray-100 flex justify-end items-start select-none"
+      className="relative h-screen bg-gray-100 flex justify-end items-end select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       <div>
-        <img src="/circleup1.svg" alt="" className="w-40" />
+        <img src="/circle.svg" alt="" className="w-40" />
       </div>
 
       <div className="absolute">
         <div className="relative w-60">
-          <div>
-            <img src="/circleup2.svg" alt="" className="w-60" />
+          <div className="relative">
+            <img src="/circle2.svg" alt="" className="relative w-60" />
+            <div className="absolute bottom-12 right-6 flex justify-center items-center">
+              <span className="text-xl font-semibold uppercase  text-gray-700">
+                Sector
+              </span>
+            </div>
           </div>
           {fixedAngles.map((angle, index) => {
             const newAngle = angle + (isAnimating ? Math.PI / 4 : 0); // Adjust angle during animation
-            const x = centerX + radius * Math.sin(newAngle); // Corrected for rightward movement
-            const y = centerY + radius * Math.cos(newAngle); // Corrected for downward movement
+            const x = centerX + radius * Math.cos(newAngle);
+            const y = centerY - radius * Math.sin(newAngle);
 
             return (
               <div
@@ -94,7 +92,6 @@ const CurvedLineUp = () => {
                 style={{ left: `${x}px`, top: `${y}px` }}
               >
                 <div className="relative w-8 h-8 bg-blue-500 rounded-full">
-                  {/* Positioning the text to the left of the dot */}
                   <div className="absolute right-full mr-4 text-black text-sm w-32 text-right">
                     {allTexts[(currentIndex + index) % allTexts.length]}
                   </div>
@@ -108,4 +105,4 @@ const CurvedLineUp = () => {
   );
 };
 
-export default CurvedLineUp;
+export default Sectors;

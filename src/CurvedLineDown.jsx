@@ -69,7 +69,7 @@ const CurvedLineDown = () => {
 
   return (
     <div
-      className="relative min-h-screen bg-gray-100 flex justify-end items-end select-none"
+      className="relative  bg-gray-100 flex justify-end items-end select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

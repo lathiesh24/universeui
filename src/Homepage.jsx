@@ -3,18 +3,18 @@ import Sectors from "./Sectors";
 import SubSectors from "./SubSectors";
 
 const Homepage = () => {
-  const [showSubSectors, setShowSubSectors] = useState(false);
+  const [selectedSector, setSelectedSector] = useState(null);
 
-  const handleSectorClick = () => {
-    setShowSubSectors(true); // Switch to SubSectors when the small circle is clicked
+  const handleSectorClick = (sectorName) => {
+    setSelectedSector(sectorName); // Set the selected sector when a sector is clicked
   };
 
   return (
     <div>
-      {showSubSectors ? (
-        <SubSectors />
+      {selectedSector ? (
+        <SubSectors selectedSector={selectedSector} />
       ) : (
-          <Sectors onSectorClick={handleSectorClick} />
+        <Sectors onSectorClick={handleSectorClick} />
       )}
     </div>
   );

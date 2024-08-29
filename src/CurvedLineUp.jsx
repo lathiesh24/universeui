@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
-const CurvedLineUp = () => {
-  const radius = 200; // Radius of the curve
-  const centerX = radius; // Center the topmost dot horizontally
-  const centerY = 0; // Y position for the topmost dot (you can adjust this for your design)
+const CurvedLineUp = ({ selectedSector }) => {
+  const radius = 224; // Radius of the curve
+  const centerX = 226; // Center the topmost dot horizontally
+  const centerY = 10; // Y position for the topmost dot (you can adjust this for your design)
 
   // Extract sector names from the JSON data
   const sectorNames = sectorsData.sectors.map((sector) => sector.sectorName);
@@ -16,13 +16,29 @@ const CurvedLineUp = () => {
     0, // Bottom right (0°)
   ];
 
-  // Use the sector names for the text data
-  const allTexts =
-    sectorNames.length > 0 ? sectorNames : ["No Sectors Available"];
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startX, setStartX] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const middleIndex = Math.floor(fixedAngles.length / 2);
+
+  // Find the index of the selected sector
+  const selectedIndex = sectorNames.indexOf(selectedSector);
+
+  // Determine the sectors to display
+  const displayedSectors =
+    selectedIndex !== -1
+      ? [
+          sectorNames[
+            (selectedIndex - 1 + sectorNames.length) % sectorNames.length
+          ],
+          sectorNames[selectedIndex],
+          sectorNames[(selectedIndex + 1) % sectorNames.length],
+        ]
+      : [
+          "No Sectors Available",
+          "No Sectors Available",
+          "No Sectors Available",
+        ];
 
   const handleTouchStart = (e) => {
     if (isAnimating) return; // Prevent interaction during animation
@@ -51,11 +67,11 @@ const CurvedLineUp = () => {
     setIsAnimating(true);
 
     setTimeout(() => {
-      setCurrentIndex((prevIndex) =>
+      const newIndex =
         direction === "next"
-          ? (prevIndex + 1) % allTexts.length
-          : (prevIndex - 1 + allTexts.length) % allTexts.length
-      );
+          ? (selectedIndex + 1) % sectorNames.length
+          : (selectedIndex - 1 + sectorNames.length) % sectorNames.length;
+      setCurrentIndex(newIndex);
       setIsAnimating(false);
     }, 500); // Match this duration with the CSS transition duration
   };
@@ -77,9 +93,12 @@ const CurvedLineUp = () => {
             <img src="/circleup2.svg" alt="" className="w-60" />
           </div>
           {fixedAngles.map((angle, index) => {
-            const newAngle = angle + (isAnimating ? Math.PI / 4 : 0); // Adjust angle during animation
-            const x = centerX + radius * Math.sin(newAngle); // Corrected for rightward movement
-            const y = centerY + radius * Math.cos(newAngle); // Corrected for downward movement
+            const isMiddleDot = index === middleIndex; // Check if this is the middle dot
+            const newAngle = angle + (isAnimating ? Math.PI / 4 : 0);
+            const x =
+              centerX + radius * Math.sin(newAngle) - (isMiddleDot ? 14 : 12);
+            const y =
+              centerY + radius * Math.cos(newAngle) - (isMiddleDot ? 14 : 12);
 
             return (
               <div
@@ -87,10 +106,19 @@ const CurvedLineUp = () => {
                 className={`absolute transition-all duration-500 ease-in-out`}
                 style={{ left: `${x}px`, top: `${y}px` }}
               >
-                <div className="relative w-8 h-8 bg-blue-500 rounded-full">
-                  {/* Positioning the text to the left of the dot */}
-                  <div className="absolute right-full mr-4 text-black text-sm w-32 text-right">
-                    {allTexts[(currentIndex + index) % allTexts.length]}
+                <div
+                  className={`relative rounded-full shadow-lg ${
+                    isMiddleDot
+                      ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
+                      : "bg-[#D8D8D8] w-6 h-6"
+                  }`}
+                >
+                  <div
+                    className={`absolute right-full mr-4 text-black text-sm w-32 text-right ${
+                      isMiddleDot ? "font-semibold text-base" : ""
+                    }`}
+                  >
+                    {displayedSectors[index]}
                   </div>
                 </div>
               </div>

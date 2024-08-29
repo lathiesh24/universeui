@@ -2,17 +2,17 @@ import React from "react";
 import CurvedLineUp from "./CurvedLineUp";
 import CurvedLineDown from "./CurvedLineDown";
 
-const SubSectors = () => {
+const SubSectors = ({ selectedSector }) => {
   return (
     <div className="relative h-screen flex flex-col justify-between bg-gray-100">
       {/* CurvedLineUp at the top */}
       <div className="flex-grow-0">
-        <CurvedLineUp />
+        <CurvedLineUp selectedSector={selectedSector} />
       </div>
 
       {/* CurvedLineDown at the bottom */}
       <div className="flex-grow-0">
-        <CurvedLineDown />
+        <CurvedLineDown selectedSector={selectedSector} />
       </div>
     </div>
   );

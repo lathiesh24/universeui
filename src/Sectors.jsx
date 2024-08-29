@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
 const Sectors = ({ onSectorClick }) => {
-  const radius = 180; // radius of the circle
-  const centerX = radius; // center of the circle on x-axis
-  const centerY = radius; // center of the circle on y-axis
+  const radius = 214; // Radius of the circle
+  const centerX = 210; // Center of the circle on x-axis
+  const centerY = 200; // Center of the circle on y-axis
 
   // Extract sector names from the sectors data
   const sectorNames = sectorsData.sectors.map((sector) => sector.sectorName);
@@ -16,12 +16,11 @@ const Sectors = ({ onSectorClick }) => {
     Math.PI / 2, // Rightmost position (90°)
   ];
 
-  // Use the sector names for the text data
-  const allTexts = sectorNames;
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startX, setStartX] = useState(null);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  const middleIndex = Math.floor(fixedAngles.length / 2); // Find the middle dot index
 
   const handleTouchStart = (e) => {
     if (isAnimating) return; // Prevent interaction during animation
@@ -52,8 +51,8 @@ const Sectors = ({ onSectorClick }) => {
     setTimeout(() => {
       setCurrentIndex((prevIndex) =>
         direction === "next"
-          ? (prevIndex + 1) % allTexts.length
-          : (prevIndex - 1 + allTexts.length) % allTexts.length
+          ? (prevIndex + 1) % sectorNames.length
+          : (prevIndex - 1 + sectorNames.length) % sectorNames.length
       );
       setIsAnimating(false);
     }, 500); // Match this duration with the CSS transition duration
@@ -74,16 +73,14 @@ const Sectors = ({ onSectorClick }) => {
         <div className="relative w-60">
           <div className="relative">
             <img src="/circle2.svg" alt="" className="relative w-60" />
-            <div
-              className="absolute bottom-12 right-6 flex justify-center items-center cursor-pointer"
-              onClick={onSectorClick}
-            >
+            <div className="absolute bottom-12 right-6 flex justify-center items-center">
               <span className="text-xl font-semibold uppercase text-gray-700">
                 Sector
               </span>
             </div>
           </div>
           {fixedAngles.map((angle, index) => {
+            const isMiddleDot = index === middleIndex; // Check if this is the middle dot
             const newAngle = angle + (isAnimating ? Math.PI / 4 : 0); // Adjust angle during animation
             const x = centerX + radius * Math.cos(newAngle);
             const y = centerY - radius * Math.sin(newAngle);
@@ -94,9 +91,24 @@ const Sectors = ({ onSectorClick }) => {
                 className={`absolute transition-all duration-500 ease-in-out`}
                 style={{ left: `${x}px`, top: `${y}px` }}
               >
-                <div className="relative w-8 h-8 bg-blue-500 rounded-full">
-                  <div className="absolute right-full mr-4 text-black text-sm w-32 text-right">
-                    {allTexts[(currentIndex + index) % allTexts.length]}
+                <div
+                  className={`relative rounded-full shadow-lg ${
+                    isMiddleDot
+                      ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
+                      : "bg-[#D8D8D8] w-6 h-6"
+                  }`}
+                >
+                  <div
+                    className={`absolute right-full mr-4 text-black text-sm w-32 text-right ${
+                      isMiddleDot ? "font-semibold text-base" : ""
+                    } cursor-pointer`} // Make the text cursor-pointer
+                    onClick={() =>
+                      onSectorClick(
+                        sectorNames[(currentIndex + index) % sectorNames.length]
+                      )
+                    } // Pass the selected sector name on click
+                  >
+                    {sectorNames[(currentIndex + index) % sectorNames.length]}
                   </div>
                 </div>
               </div>

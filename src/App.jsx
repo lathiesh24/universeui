@@ -10,6 +10,7 @@ import Usecases from "./Usecases";
 import Sectors from "./Sectors";
 import Homepage from "./Homepage";
 import SubIndustries from "./SubIndustries";
+import UsecasesCombined from "./UsecasesCombined";
 
 const App = () => {
   return (
@@ -22,9 +23,9 @@ const App = () => {
           <Route path="/practice" element={<Practice />} />
           <Route path="/curved-lineup" element={<CurvedLineUp/>}/>
           <Route path="/startup-info" element={<StartupInfo />} />
-          <Route path="/usecases" element={<Usecases />} />
+          <Route path="/usecases" element={<UsecasesCombined/>} />
           <Route path="/sectors" element={<Sectors />} />
-          <Route path = "/sub-industries" element={<SubIndustries/>} />s
+          <Route path = "/sub-industries" element={<SubIndustries/>} />
         </Routes>
       </div>
   );

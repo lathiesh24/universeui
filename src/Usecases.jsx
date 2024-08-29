@@ -26,7 +26,7 @@ const Usecases = () => {
   };
 
   return (
-    <div className="flex justify-between items-center gap-4 h-screen">
+    <div className="flex justify-between items-center gap-4">
       {/* Container for "Use Cases" Box */}
       <div className="flex items-center justify-center w-8 h-28">
         <div className="inline-block px-10 py-1.5 border border-[#0081CA] bg-[#F0FAFF] uppercase font-medium transform -rotate-90 text-nowrap">
@@ -38,7 +38,7 @@ const Usecases = () => {
       <div className="flex flex-col items-center gap-4 w-full max-w-md">
         <div
           key={useCasesData[currentIndex].id}
-          className="flex flex-col  border shadow-custom px-8 py-6 rounded-md text-center w-full"
+          className="flex flex-col justify-between items-center border shadow-custom px-8 py-6 rounded-md text-center w-full"
         >
           <div className="text-xl">{useCasesData[currentIndex].useCase}</div>
           <div

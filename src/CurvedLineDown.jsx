@@ -1,18 +1,19 @@
 import React, { useState } from "react";
-import sectorsData from "./data/sector_data.json"; // Correctly import the JSON file
+import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
-const CurvedLineDown = () => {
+const CurvedLineDown = ({ selectedSector }) => {
   const radius = 180;
   const centerX = radius;
   const centerY = radius;
 
-  // Extract industry names from a specific sector (e.g., BFSI)
-  const bfsiSector = sectorsData.sectors.find(
-    (sector) => sector.sectorId === "bfsi"
+  // Find the selected sector's data
+  const selectedSectorData = sectorsData.sectors.find(
+    (sector) => sector.sectorName === selectedSector
   );
 
-  const industryNames = bfsiSector
-    ? bfsiSector.industries.map((industry) => industry.industryName)
+  // Extract industry names based on the selected sector
+  const industryNames = selectedSectorData
+    ? selectedSectorData.industries.map((industry) => industry.industryName)
     : ["No Industries Found"];
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -56,6 +57,7 @@ const CurvedLineDown = () => {
   };
 
   const fixedAngles = [Math.PI, (3 * Math.PI) / 4, Math.PI / 2];
+  const middleIndex = Math.floor(fixedAngles.length / 2);
 
   return (
     <div
@@ -74,6 +76,7 @@ const CurvedLineDown = () => {
             <img src="/circle2.svg" alt="" className="w-60" />
           </div>
           {fixedAngles.map((angle, index) => {
+            const isMiddleDot = index === middleIndex; // Check if this is the middle dot
             const newAngle = angle + (isAnimating ? Math.PI / 4 : 0);
             const x = centerX + radius * Math.cos(newAngle);
             const y = centerY - radius * Math.sin(newAngle);
@@ -84,8 +87,18 @@ const CurvedLineDown = () => {
                 className={`absolute transition-all duration-500 ease-in-out`}
                 style={{ left: `${x}px`, top: `${y}px` }}
               >
-                <div className="relative w-8 h-8 bg-blue-500 rounded-full">
-                  <div className="absolute right-full mr-4 text-black text-sm w-32 text-right">
+                <div
+                  className={`relative rounded-full shadow-lg ${
+                    isMiddleDot
+                      ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
+                      : "bg-[#D8D8D8] w-6 h-6"
+                  }`}
+                >
+                  <div
+                    className={`absolute right-full mr-4 text-black text-sm w-32 text-right ${
+                      isMiddleDot ? "font-semibold text-base" : ""
+                    }`}
+                  >
                     {
                       industryNames[
                         (currentIndex + index) % industryNames.length

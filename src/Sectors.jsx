@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
-const Sectors = () => {
+const Sectors = ({ onSectorClick }) => {
   const radius = 180; // radius of the circle
   const centerX = radius; // center of the circle on x-axis
   const centerY = radius; // center of the circle on y-axis
@@ -74,8 +74,11 @@ const Sectors = () => {
         <div className="relative w-60">
           <div className="relative">
             <img src="/circle2.svg" alt="" className="relative w-60" />
-            <div className="absolute bottom-12 right-6 flex justify-center items-center">
-              <span className="text-xl font-semibold uppercase  text-gray-700">
+            <div
+              className="absolute bottom-12 right-6 flex justify-center items-center cursor-pointer"
+              onClick={onSectorClick}
+            >
+              <span className="text-xl font-semibold uppercase text-gray-700">
                 Sector
               </span>
             </div>

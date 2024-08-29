@@ -1,30 +1,24 @@
 import React, { useState } from "react";
+import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
 const CurvedLineUp = () => {
   const radius = 200; // Radius of the curve
   const centerX = radius; // Center the topmost dot horizontally
   const centerY = 0; // Y position for the topmost dot (you can adjust this for your design)
 
-  // Define the angles for the curve (moving downward to the right)
+  // Extract sector names from the JSON data
+  const sectorNames = sectorsData.sectors.map((sector) => sector.sectorName);
+
+  // Define the fixed positions for the three dots along the curve
   const fixedAngles = [
     -Math.PI / 2, // Top center (90°)
     -Math.PI / 4, // Middle right (45°)
     0, // Bottom right (0°)
   ];
 
-  // Use the provided static text data for the dots
-  const allTexts = [
-    "Dot 1 (180°)",
-    "Dot 2 (135°)",
-    "Dot 3 (90°)",
-    "Dot 4 (45°)",
-    "Dot 5 (0°)",
-    "Dot 6 (-45°)",
-    "Dot 7 (-90°)",
-    "Dot 8 (-135°)",
-    "Dot 9 (-180°)",
-    "Dot 10 (-225°)",
-  ];
+  // Use the sector names for the text data
+  const allTexts =
+    sectorNames.length > 0 ? sectorNames : ["No Sectors Available"];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startX, setStartX] = useState(null);
@@ -68,7 +62,7 @@ const CurvedLineUp = () => {
 
   return (
     <div
-      className="relative  bg-gray-100 flex justify-end items-start select-none"
+      className="relative bg-gray-100 flex justify-end items-start select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

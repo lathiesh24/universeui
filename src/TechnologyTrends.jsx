@@ -1,19 +1,17 @@
 import React, { useState } from "react";
 import sectorsData from "./data/sector_data.json"; // Correctly import the JSON file
 
-const CurvedLineDown = () => {
+const TechnologyTrends = () => {
   const radius = 180;
   const centerX = radius;
   const centerY = radius;
 
-  // Extract industry names from a specific sector (e.g., BFSI)
-  const bfsiSector = sectorsData.sectors.find(
-    (sector) => sector.sectorId === "bfsi"
+  // Extract all technology names directly from all sectors
+  const technologyNames = sectorsData.sectors.flatMap((sector) =>
+    sector.industries.flatMap((industry) =>
+      industry.technologies.map((tech) => tech.technologyName)
+    )
   );
-
-  const industryNames = bfsiSector
-    ? bfsiSector.industries.map((industry) => industry.industryName)
-    : ["No Industries Found"];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startX, setStartX] = useState(null);
@@ -48,8 +46,8 @@ const CurvedLineDown = () => {
     setTimeout(() => {
       setCurrentIndex((prevIndex) =>
         direction === "next"
-          ? (prevIndex + 1) % industryNames.length
-          : (prevIndex - 1 + industryNames.length) % industryNames.length
+          ? (prevIndex + 1) % technologyNames.length
+          : (prevIndex - 1 + technologyNames.length) % technologyNames.length
       );
       setIsAnimating(false);
     }, 500);
@@ -87,8 +85,8 @@ const CurvedLineDown = () => {
                 <div className="relative w-8 h-8 bg-blue-500 rounded-full">
                   <div className="absolute right-full mr-4 text-black text-sm w-32 text-right">
                     {
-                      industryNames[
-                        (currentIndex + index) % industryNames.length
+                      technologyNames[
+                        (currentIndex + index) % technologyNames.length
                       ]
                     }
                   </div>
@@ -102,4 +100,4 @@ const CurvedLineDown = () => {
   );
 };
 
-export default CurvedLineDown;
+export default TechnologyTrends;

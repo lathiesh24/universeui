@@ -11,23 +11,24 @@ import Sectors from "./Sectors";
 import Homepage from "./Homepage";
 import SubIndustries from "./SubIndustries";
 import UsecasesCombined from "./UsecasesCombined";
+import UsecaseDescription from "./UsecaseDescription";
+import Ecosystem from "./EcoSystem";
 
 const App = () => {
   return (
-      <div>
-        <Routes>
-          <Route path="/" exact element={<Homepage/>} />
-          <Route path="/subsectors" exact element={<SubSectors/>}/>
-          <Route path="/orbiting-subsectors" element={<OrbitingSubsectors />} />
-          <Route path="/mobile-orbit" element={<MobileOrbit />} />
-          <Route path="/practice" element={<Practice />} />
-          <Route path="/curved-lineup" element={<CurvedLineUp/>}/>
-          <Route path="/startup-info" element={<StartupInfo />} />
-          <Route path="/usecases" element={<UsecasesCombined/>} />
-          <Route path="/sectors" element={<Sectors />} />
-          <Route path = "/sub-industries" element={<SubIndustries/>} />
-        </Routes>
-      </div>
+    <div>
+      <Routes>
+        <Route path="/" exact element={<Homepage />} />
+        <Route path="/subsectors" exact element={<SubSectors />} />
+        <Route path="/orbiting-subsectors" element={<OrbitingSubsectors />} />
+        <Route path="/mobile-orbit" element={<MobileOrbit />} />
+        <Route path="/practice" element={<Practice />} />
+        <Route path="/curved-lineup" element={<CurvedLineUp />} />
+        <Route path="/startup-info" element={<StartupInfo />} />
+        <Route path="/usecase-description" element={<UsecaseDescription />} />
+        <Route path="/ecosystem" element={<Ecosystem />} />
+      </Routes>
+    </div>
   );
 };
 

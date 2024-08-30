@@ -1,109 +1,9 @@
 {
     "sectors": [
         {
-            "sectorId": "energy",
-            "sectorName": "Energy",
-            "industries": []
-        },
-        {
-            "sectorId": "materials",
-            "sectorName": "Materials",
-            "industries": []
-        },
-        {
-            "sectorId": "industrials",
-            "sectorName": "Industrials",
-            "industries": []
-        },
-        {
-            "sectorId": "consumerDiscretionary",
-            "sectorName": "Consumer Discretionary",
-            "industries": []
-        },
-        {
-            "sectorId": "consumerStaples",
-            "sectorName": "Consumer Staples",
-            "industries": []
-        },
-        {
-            "sectorId": "healthcare",
-            "sectorName": "Healthcare",
-            "industries": []
-        },
-        {
             "sectorId": "bfsi",
             "sectorName": "Banking, Financial Service & Insurance",
             "industries": [
-                {
-                    "industryId": "diversifiedBanks",
-                    "industryName": "Diversified Banks",
-                    "technologies": []
-                },
-                {
-                    "industryId": "regionalBanks",
-                    "industryName": "Regional Banks",
-                    "technologies": []
-                },
-                {
-                    "industryId": "consumerFinance",
-                    "industryName": "Consumer Finance",
-                    "technologies": []
-                },
-                {
-                    "industryId": "diversifiedFinancialServices",
-                    "industryName": "Diversified Financial Services",
-                    "technologies": []
-                },
-                {
-                    "industryId": "multiSectorHoldings",
-                    "industryName": "Multi-Sector Holdings",
-                    "technologies": []
-                },
-                {
-                    "industryId": "specializedFinance",
-                    "industryName": "Specialized Finance",
-                    "technologies": []
-                },
-                {
-                    "industryId": "commercialResidentialMortgageFinance",
-                    "industryName": "Commercial & Residential Mortgage Finance",
-                    "technologies": []
-                },
-                {
-                    "industryId": "transactionPaymentProcessingServices",
-                    "industryName": "Transaction & Payment Processing Services",
-                    "technologies": []
-                },
-                {
-                    "industryId": "assetManagementCustodyBanks",
-                    "industryName": "Asset Management & Custody Banks",
-                    "technologies": []
-                },
-                {
-                    "industryId": "investmentBankingBrokerage",
-                    "industryName": "Investment Banking & Brokerage",
-                    "technologies": []
-                },
-                {
-                    "industryId": "diversifiedCapitalMarkets",
-                    "industryName": "Diversified Capital Markets",
-                    "technologies": []
-                },
-                {
-                    "industryId": "financialExchangesData",
-                    "industryName": "Financial Exchanges & Data",
-                    "technologies": []
-                },
-                {
-                    "industryId": "mortgageReits",
-                    "industryName": "Mortgage REITs",
-                    "technologies": []
-                },
-                {
-                    "industryId": "insuranceBrokers",
-                    "industryName": "Insurance Brokers",
-                    "technologies": []
-                },
                 {
                     "industryId": "lifeHealthInsurance",
                     "industryName": "Life & Health Insurance",
@@ -269,35 +169,136 @@
                             "technologyName": "Distributed Infrastructure",
                             "useCases": []
                         },
-                                                {
-                                                    "technologyId": "trustArchitecture",
-                                                    "technologyName": "Trust Architecture (Blockchain and Zero-Trust Security)",
-                                                    "useCases": []
-                                                },
-                                                {
-                                                    "technologyId": "nextLevelProcessAutomation",
-                                                    "technologyName": "Next-Level Process Automation",
-                                                    "useCases": []
-                                                }
-                                            ]
-                                        },
-                                        {
-                                            "industryId": "multiLineInsurance",
-                                            "industryName": "Multi-line Insurance",
-                                            "technologies": []
-                                        },
-                                        {
-                                            "industryId": "propertyCasualtyInsurance",
-                                            "industryName": "Property & Casualty Insurance",
-                                            "technologies": []
-                                        },
-                                        {
-                                            "industryId": "reinsurance",
-                                            "industryName": "Reinsurance",
-                                            "technologies": []
-                                        }
-                                    ]
-                                },
+                        {
+                            "technologyId": "trustArchitecture",
+                            "technologyName": "Trust Architecture (Blockchain and Zero-Trust Security)",
+                            "useCases": []
+                        },
+                        {
+                            "technologyId": "nextLevelProcessAutomation",
+                            "technologyName": "Next-Level Process Automation",
+                            "useCases": []
+                        }
+                    ]
+                },
+                {
+                    "industryId": "diversifiedBanks",
+                    "industryName": "Diversified Banks",
+                    "technologies": []
+                },
+                {
+                    "industryId": "regionalBanks",
+                    "industryName": "Regional Banks",
+                    "technologies": []
+                },
+                {
+                    "industryId": "consumerFinance",
+                    "industryName": "Consumer Finance",
+                    "technologies": []
+                },
+                {
+                    "industryId": "diversifiedFinancialServices",
+                    "industryName": "Diversified Financial Services",
+                    "technologies": []
+                },
+                {
+                    "industryId": "multiSectorHoldings",
+                    "industryName": "Multi-Sector Holdings",
+                    "technologies": []
+                },
+                {
+                    "industryId": "specializedFinance",
+                    "industryName": "Specialized Finance",
+                    "technologies": []
+                },
+                {
+                    "industryId": "commercialResidentialMortgageFinance",
+                    "industryName": "Commercial & Residential Mortgage Finance",
+                    "technologies": []
+                },
+                {
+                    "industryId": "transactionPaymentProcessingServices",
+                    "industryName": "Transaction & Payment Processing Services",
+                    "technologies": []
+                },
+                {
+                    "industryId": "assetManagementCustodyBanks",
+                    "industryName": "Asset Management & Custody Banks",
+                    "technologies": []
+                },
+                {
+                    "industryId": "investmentBankingBrokerage",
+                    "industryName": "Investment Banking & Brokerage",
+                    "technologies": []
+                },
+                {
+                    "industryId": "diversifiedCapitalMarkets",
+                    "industryName": "Diversified Capital Markets",
+                    "technologies": []
+                },
+                {
+                    "industryId": "financialExchangesData",
+                    "industryName": "Financial Exchanges & Data",
+                    "technologies": []
+                },
+                {
+                    "industryId": "mortgageReits",
+                    "industryName": "Mortgage REITs",
+                    "technologies": []
+                },
+                {
+                    "industryId": "insuranceBrokers",
+                    "industryName": "Insurance Brokers",
+                    "technologies": []
+                },
+                {
+                    "industryId": "multiLineInsurance",
+                    "industryName": "Multi-line Insurance",
+                    "technologies": []
+                },
+                {
+                    "industryId": "propertyCasualtyInsurance",
+                    "industryName": "Property & Casualty Insurance",
+                    "technologies": []
+                },
+                {
+                    "industryId": "reinsurance",
+                    "industryName": "Reinsurance",
+                    "technologies": []
+                }
+            ]
+        },
+        {
+            "sectorId": "energy",
+            "sectorName": "Energy",
+            "industries": []
+        },
+        {
+            "sectorId": "materials",
+            "sectorName": "Materials",
+            "industries": []
+        },
+        {
+            "sectorId": "industrials",
+            "sectorName": "Industrials",
+            "industries": []
+        },
+        {
+            "sectorId": "consumerDiscretionary",
+            "sectorName": "Consumer Discretionary",
+            "industries": []
+        },
+        {
+            "sectorId": "consumerStaples",
+            "sectorName": "Consumer Staples",
+            "industries": []
+        },
+        {
+            "sectorId": "healthcare",
+            "sectorName": "Healthcare",
+            "industries": []
+        },
+        
                                 {
                                     "sectorId": "informationTechnology",
                                     "sectorName": "Information Technology",

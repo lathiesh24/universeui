@@ -1,20 +1,28 @@
 import React, { useState } from "react";
 import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
-const CurvedLineDown = ({ selectedSector, onIndustryClick }) => {
+const IndustriesDown = ({ selectedIndustry, onTechnologyClick }) => {
   const radius = 180;
   const centerX = radius;
   const centerY = radius;
 
-  // Find the selected sector's data
-  const selectedSectorData = sectorsData.sectors.find(
-    (sector) => sector.sectorName === selectedSector
+  // Find the selected industry's data within the sectors
+  const selectedSector = sectorsData.sectors.find((sector) =>
+    sector.industries.some(
+      (industry) => industry.industryName === selectedIndustry
+    )
   );
 
-  // Extract industry names based on the selected sector
-  const industryNames = selectedSectorData
-    ? selectedSectorData.industries.map((industry) => industry.industryName)
-    : ["No Industries Found"];
+  const selectedIndustryData = selectedSector
+    ? selectedSector.industries.find(
+        (industry) => industry.industryName === selectedIndustry
+      )
+    : null;
+
+  // Extract technology names based on the selected industry
+  const technologyNames = selectedIndustryData
+    ? selectedIndustryData.technologies.map((tech) => tech.technologyName)
+    : ["No Technologies Available"];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [startX, setStartX] = useState(null);
@@ -49,8 +57,8 @@ const CurvedLineDown = ({ selectedSector, onIndustryClick }) => {
     setTimeout(() => {
       setCurrentIndex((prevIndex) =>
         direction === "next"
-          ? (prevIndex + 1) % industryNames.length
-          : (prevIndex - 1 + industryNames.length) % industryNames.length
+          ? (prevIndex + 1) % technologyNames.length
+          : (prevIndex - 1 + technologyNames.length) % technologyNames.length
       );
       setIsAnimating(false);
     }, 500);
@@ -88,15 +96,15 @@ const CurvedLineDown = ({ selectedSector, onIndustryClick }) => {
                 style={{ left: `${x}px`, top: `${y}px` }}
               >
                 <div
-                  className={`relative rounded-full shadow-lg cursor-pointer ${
+                  className={`relative rounded-full shadow-lg ${
                     isMiddleDot
                       ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
                       : "bg-[#D8D8D8] w-6 h-6"
                   }`}
                   onClick={() =>
-                    onIndustryClick(
-                      industryNames[
-                        (currentIndex + index) % industryNames.length
+                    onTechnologyClick(
+                      technologyNames[
+                        (currentIndex + index) % technologyNames.length
                       ]
                     )
                   }
@@ -107,8 +115,8 @@ const CurvedLineDown = ({ selectedSector, onIndustryClick }) => {
                     }`}
                   >
                     {
-                      industryNames[
-                        (currentIndex + index) % industryNames.length
+                      technologyNames[
+                        (currentIndex + index) % technologyNames.length
                       ]
                     }
                   </div>
@@ -122,4 +130,4 @@ const CurvedLineDown = ({ selectedSector, onIndustryClick }) => {
   );
 };
 
-export default CurvedLineDown;
+export default IndustriesDown;

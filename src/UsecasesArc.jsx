@@ -1,27 +1,87 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import sectorsData from "./data/sector_data.json"; // Import the JSON data
 
-const UsecasesAec = () => {
-  const radius1 = 200; // Radius of the first arc
-  const radius2 = 320; // Radius of the second arc
-  const centerX1 = radius1; // Center the first arc's topmost dot horizontally
-  const centerY1 = 0; // Y position for the first arc's topmost dot
-  const centerX2 = radius2; // Center the second arc's topmost dot horizontally
-  const centerY2 = 0; // Y position for the second arc's topmost dot
+const UsecasesArc = ({ selectedIndustry, selectedTechnology }) => {
+  const radius1 = 220; // Radius of the first arc
+  const radius2 = 339; // Radius of the second arc
+  const centerX1 = 213; // Center the first arc's topmost dot horizontally
+  const centerY1 = 1; // Y positon for the first arc's topmost dot
+  const centerX2 = 330; // Center the second arc's topmost dot horizontally
+  const centerY2 = 1; // Y position for the second arc's topmost dot
 
-  // Extract sector names for the first arc's dots
-  const sectorNames = sectorsData.sectors.map((sector) => sector.sectorName);
+  // Find the selected industry's data within the sectors
+  const selectedSector = sectorsData.sectors.find((sector) =>
+    sector.industries.some(
+      (industry) => industry.industryName === selectedIndustry
+    )
+  );
 
-  // Extract technology names for the second arc's dots
-  const bfsiSector = sectorsData.sectors.find(
-    (sector) => sector.sectorId === "bfsi"
+  const selectedIndustryData = selectedSector
+    ? selectedSector.industries.find(
+        (industry) => industry.industryName === selectedIndustry
+      )
+    : null;
+
+  const technologyNames = selectedIndustryData
+    ? selectedIndustryData.technologies.map((tech) => tech.technologyName)
+    : [];
+
+  // Find the index of the selected industry and technology
+  const selectedIndustryIndex = selectedIndustryData
+    ? selectedSector.industries
+        .map((industry) => industry.industryName)
+        .indexOf(selectedIndustry)
+    : -1;
+
+  const selectedTechnologyIndex = technologyNames.indexOf(selectedTechnology);
+
+  // Determine the industries and technologies to display along with their neighbors
+  const displayedIndustries =
+    selectedIndustryIndex !== -1
+      ? [
+          selectedSector.industries[
+            (selectedIndustryIndex - 1 + selectedSector.industries.length) %
+              selectedSector.industries.length
+          ].industryName,
+          selectedIndustry,
+          selectedSector.industries[
+            (selectedIndustryIndex + 1) % selectedSector.industries.length
+          ].industryName,
+        ]
+      : [
+          "No Industries Available",
+          "No Industries Available",
+          "No Industries Available",
+        ];
+
+  const displayedTechnologies =
+    selectedTechnologyIndex !== -1
+      ? [
+          technologyNames[
+            (selectedTechnologyIndex - 1 + technologyNames.length) %
+              technologyNames.length
+          ],
+          selectedTechnology,
+          technologyNames[
+            (selectedTechnologyIndex + 1) % technologyNames.length
+          ],
+        ]
+      : [
+          "No Technologies Available",
+          "No Technologies Available",
+          "No Technologies Available",
+        ];
+
+  const [currentIndexArc1, setCurrentIndexArc1] = useState(
+    selectedIndustryIndex
   );
-  const lifeHealthInsurance = bfsiSector.industries.find(
-    (industry) => industry.industryId === "lifeHealthInsurance"
+  const [currentIndexArc2, setCurrentIndexArc2] = useState(
+    selectedTechnologyIndex
   );
-  const technologyNames = lifeHealthInsurance.technologies.map(
-    (tech) => tech.technologyName
-  );
+  const [startXArc1, setStartXArc1] = useState(null);
+  const [startXArc2, setStartXArc2] = useState(null);
+  const [isAnimatingArc1, setIsAnimatingArc1] = useState(false);
+  const [isAnimatingArc2, setIsAnimatingArc2] = useState(false);
 
   // Define the fixed positions for the three dots along each arc
   const fixedAnglesArc1 = [
@@ -35,21 +95,6 @@ const UsecasesAec = () => {
     -Math.PI / 4, // Middle right (30°)
     0, // Bottom right (0°)
   ];
-
-  // Use the sector names for the text data
-  const allTexts1 =
-    sectorNames.length > 0 ? sectorNames : ["No Sectors Available"];
-  const allTexts2 =
-    technologyNames.length > 0
-      ? technologyNames
-      : ["No Technologies Available"];
-
-  const [currentIndexArc1, setCurrentIndexArc1] = useState(0);
-  const [currentIndexArc2, setCurrentIndexArc2] = useState(0);
-  const [startXArc1, setStartXArc1] = useState(null);
-  const [startXArc2, setStartXArc2] = useState(null);
-  const [isAnimatingArc1, setIsAnimatingArc1] = useState(false);
-  const [isAnimatingArc2, setIsAnimatingArc2] = useState(false);
 
   // Handlers for the first arc
   const handleTouchStartArc1 = (e) => {
@@ -81,8 +126,9 @@ const UsecasesAec = () => {
     setTimeout(() => {
       setCurrentIndexArc1((prevIndex) =>
         direction === "next"
-          ? (prevIndex + 1) % allTexts1.length
-          : (prevIndex - 1 + allTexts1.length) % allTexts1.length
+          ? (prevIndex + 1) % displayedIndustries.length
+          : (prevIndex - 1 + displayedIndustries.length) %
+            displayedIndustries.length
       );
       setIsAnimatingArc1(false);
     }, 500);
@@ -118,8 +164,9 @@ const UsecasesAec = () => {
     setTimeout(() => {
       setCurrentIndexArc2((prevIndex) =>
         direction === "next"
-          ? (prevIndex + 1) % allTexts2.length
-          : (prevIndex - 1 + allTexts2.length) % allTexts2.length
+          ? (prevIndex + 1) % displayedTechnologies.length
+          : (prevIndex - 1 + displayedTechnologies.length) %
+            displayedTechnologies.length
       );
       setIsAnimatingArc2(false);
     }, 500);
@@ -143,6 +190,7 @@ const UsecasesAec = () => {
               <img src="/circleup2.svg" alt="" className="w-60" />
             </div>
             {fixedAnglesArc1.map((angle, index) => {
+              const isMiddleDot = index === 1; // Middle dot is at index 1
               const newAngle = angle + (isAnimatingArc1 ? Math.PI / 4 : 0);
               const x = centerX1 + radius1 * Math.sin(newAngle);
               const y = centerY1 + radius1 * Math.cos(newAngle);
@@ -153,9 +201,24 @@ const UsecasesAec = () => {
                   className={`absolute transition-all duration-500 ease-in-out`}
                   style={{ left: `${x}px`, top: `${y}px` }}
                 >
-                  <div className="relative w-8 h-8 bg-blue-500 rounded-full">
-                    <div className="absolute right-full mr-4 text-black text-sm w-32 text-right">
-                      {allTexts1[(currentIndexArc1 + index) % allTexts1.length]}
+                  <div
+                    className={`relative rounded-full shadow-lg ${
+                      isMiddleDot
+                        ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
+                        : "bg-[#D8D8D8] w-6 h-6"
+                    }`}
+                  >
+                    <div
+                      className={`absolute right-full mr-4 text-black text-sm w-32 text-right ${
+                        isMiddleDot ? "font-semibold text-base" : ""
+                      }`}
+                    >
+                      {
+                        displayedIndustries[
+                          (currentIndexArc1 + index) %
+                            displayedIndustries.length
+                        ]
+                      }
                     </div>
                   </div>
                 </div>
@@ -171,11 +234,12 @@ const UsecasesAec = () => {
           onTouchMove={handleTouchMoveArc2}
           onTouchEnd={handleTouchEndArc2}
         >
-          <div className="relative w-[380px]">
+          <div className="relative w-[360px]">
             <div>
-              <img src="/circleup2.svg" alt="" className="w-[380px]" />
+              <img src="/circleup2.svg" alt="" className="w-[360px]" />
             </div>
             {fixedAnglesArc2.map((angle, index) => {
+              const isMiddleDot = index === 1; // Middle dot is at index 1
               const newAngle = angle + (isAnimatingArc2 ? Math.PI / 4 : 0);
               const x = centerX2 + radius2 * Math.sin(newAngle);
               const y = centerY2 + radius2 * Math.cos(newAngle);
@@ -186,9 +250,24 @@ const UsecasesAec = () => {
                   className={`absolute transition-all duration-500 ease-in-out`}
                   style={{ left: `${x}px`, top: `${y}px` }}
                 >
-                  <div className="relative w-8 h-8 bg-red-500 rounded-full">
-                    <div className="absolute right-full mr-4 text-black text-sm w-32 text-right">
-                      {allTexts2[(currentIndexArc2 + index) % allTexts2.length]}
+                  <div
+                    className={`relative rounded-full shadow-lg ${
+                      isMiddleDot
+                        ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
+                        : "bg-[#D8D8D8] w-6 h-6"
+                    }`}
+                  >
+                    <div
+                      className={`absolute right-full mr-4 text-black text-sm w-32 text-right ${
+                        isMiddleDot ? "font-semibold text-base" : ""
+                      }`}
+                    >
+                      {
+                        displayedTechnologies[
+                          (currentIndexArc2 + index) %
+                            displayedTechnologies.length
+                        ]
+                      }
                     </div>
                   </div>
                 </div>
@@ -201,4 +280,4 @@ const UsecasesAec = () => {
   );
 };
 
-export default UsecasesAec;
+export default UsecasesArc;

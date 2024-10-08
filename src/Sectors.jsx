@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import sectorsData from "./data/sector_data.json"; // Import the JSON data
+import Navbar from "./Navbar";
 
 const Sectors = ({ onSectorClick }) => {
   const radius = 214; // Radius of the circle
@@ -59,64 +60,68 @@ const Sectors = ({ onSectorClick }) => {
   };
 
   return (
-    <div
-      className="relative h-screen bg-gray-100 flex justify-end items-end select-none"
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div>
-        <img src="/circle.svg" alt="" className="w-40" />
-      </div>
+    <>
+      <div
+        className="relative h-screen bg-gray-100 flex justify-end items-end select-none"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div>
+          <img src="/circle.svg" alt="" className="w-40" />
+        </div>
 
-      <div className="absolute">
-        <div className="relative w-60">
-          <div className="relative">
-            <img src="/circle2.svg" alt="" className="relative w-60" />
-            <div className="absolute bottom-12 right-6 flex justify-center items-center">
-              <span className="text-xl font-semibold uppercase text-gray-700">
-                Sector
-              </span>
+        <div className="absolute">
+          <div className="relative w-60">
+            <div className="relative">
+              <img src="/circle2.svg" alt="" className="relative w-60" />
+              <div className="absolute bottom-12 right-6 flex justify-center items-center">
+                <span className="text-xl font-semibold uppercase text-gray-700">
+                  Sector
+                </span>
+              </div>
             </div>
-          </div>
-          {fixedAngles.map((angle, index) => {
-            const isMiddleDot = index === middleIndex; // Check if this is the middle dot
-            const newAngle = angle + (isAnimating ? Math.PI / 4 : 0); // Adjust angle during animation
-            const x = centerX + radius * Math.cos(newAngle);
-            const y = centerY - radius * Math.sin(newAngle);
+            {fixedAngles.map((angle, index) => {
+              const isMiddleDot = index === middleIndex; // Check if this is the middle dot
+              const newAngle = angle + (isAnimating ? Math.PI / 4 : 0); // Adjust angle during animation
+              const x = centerX + radius * Math.cos(newAngle);
+              const y = centerY - radius * Math.sin(newAngle);
 
-            return (
-              <div
-                key={index}
-                className={`absolute transition-all duration-500 ease-in-out`}
-                style={{ left: `${x}px`, top: `${y}px` }}
-              >
+              return (
                 <div
-                  className={`relative rounded-full shadow-lg ${
-                    isMiddleDot
-                      ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
-                      : "bg-[#D8D8D8] w-6 h-6"
-                  }`}
+                  key={index}
+                  className={`absolute transition-all duration-500 ease-in-out`}
+                  style={{ left: `${x}px`, top: `${y}px` }}
                 >
                   <div
-                    className={`absolute right-full mr-4 text-black text-sm w-32 text-right ${
-                      isMiddleDot ? "font-semibold text-base" : ""
-                    } cursor-pointer`} // Make the text cursor-pointer
-                    onClick={() =>
-                      onSectorClick(
-                        sectorNames[(currentIndex + index) % sectorNames.length]
-                      )
-                    } // Pass the selected sector name on click
+                    className={`relative rounded-full shadow-lg ${
+                      isMiddleDot
+                        ? "bg-[#3AB8FF] border-2 border-[#FFEFA7] w-7 h-7"
+                        : "bg-[#D8D8D8] w-6 h-6"
+                    }`}
                   >
-                    {sectorNames[(currentIndex + index) % sectorNames.length]}
+                    <div
+                      className={`absolute right-full mr-4 text-black text-sm w-32 text-right ${
+                        isMiddleDot ? "font-semibold text-base" : ""
+                      } cursor-pointer`} // Make the text cursor-pointer
+                      onClick={() =>
+                        onSectorClick(
+                          sectorNames[
+                            (currentIndex + index) % sectorNames.length
+                          ]
+                        )
+                      } // Pass the selected sector name on click
+                    >
+                      {sectorNames[(currentIndex + index) % sectorNames.length]}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -6,13 +6,12 @@ import Practice from "./Practice";
 import SubSectors from "./SubSectors";
 import CurvedLineUp from "./CurvedLineUp";
 import StartupInfo from "./StartupInfo";
-import Usecases from "./Usecases";
-import Sectors from "./Sectors";
 import Homepage from "./Homepage";
-import SubIndustries from "./SubIndustries";
-import UsecasesCombined from "./UsecasesCombined";
 import UsecaseDescription from "./UsecaseDescription";
 import Ecosystem from "./EcoSystem";
+import Usecase from "./Usecase";
+import EcosystemWeb from "./EcosystemWeb";
+import StartupsWeb from "./StartupsWeb";
 
 const App = () => {
   return (
@@ -27,6 +26,9 @@ const App = () => {
         <Route path="/startup-info" element={<StartupInfo />} />
         <Route path="/usecase-description" element={<UsecaseDescription />} />
         <Route path="/ecosystem" element={<Ecosystem />} />
+        <Route path="/usecase" element={<Usecase/>}/>
+        <Route path = "/ecosystem-web" element={<EcosystemWeb />} />
+        <Route path="/startup" element={<StartupsWeb/>} />
       </Routes>
     </div>
   );

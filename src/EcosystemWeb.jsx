@@ -1,13 +1,27 @@
-import React from 'react'
+import React from "react";
 
 const EcosystemWeb = () => {
   return (
-    <div className="mx-auto w-[400px] flex justify-center items-center h-screen">
-      <div className="flex flex-col gap-8 justify-center items-center bg-blue-100">
-        <div className=" text-center text-white font-medium text-xl ">
-          AI-Generated Marketing Campaigns for Targeted Financial Products
+    <div className="mx-auto w-[400px] h-[83vh] flex  mt-8 ">
+      <div className="flex flex-col gap-8 justify-around items-center bg-white shadow-lg px-5 rounded py-8 overflow-y-auto w-full h-full scrollbar-thin">
+        <div className="relative flex flex-col gap-8 py-6 px-4 w-full bg-blue-400">
+          <img
+            src="ecosystembg.png"
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover opacity-50 z-0 "
+          />
+
+          {/* Content goes above the image with proper z-index to make it visible */}
+          <div className="relative z-10 text-center text-white font-medium text-xl">
+            AI-Generated Marketing Campaigns for Targeted Financial Products
+          </div>
+
+          {/* Button with proper z-index and positioning */}
+          <div className="relative z-10 flex mx-auto px-8 py-3 rounded-md font-medium bg-blue-200 text-black border-[1px] w-max justify-center items-center">
+            Explore Ecosystem
+          </div>
         </div>
-        <div className='px-8 py-3 rounded-md font-medium bg-blue-200 text-black border-[1px]'>Explore Ecosystem</div>
+
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <div className="font-semibold text-lg">Description</div>
@@ -34,6 +48,6 @@ const EcosystemWeb = () => {
       </div>
     </div>
   );
-}
+};
 
-export default EcosystemWeb
+export default EcosystemWeb;

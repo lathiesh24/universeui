@@ -17,6 +17,7 @@ import WebCircleThree from "./WebCircleThree";
 import WebCombined from "./WebCombined";
 import WebIndustries from "./WebIndustries";
 import WebUsecases from "./WebUsecases";
+import FirstLeftCircle from "./demo/LeftCircle";
 
 const App = () => {
   return (
@@ -29,14 +30,14 @@ const App = () => {
         <Route path="/startup-info" element={<StartupInfo />} />
         <Route path="/usecase-description" element={<UsecaseDescription />} />
         <Route path="/ecosystem" element={<Ecosystem />} />
-        <Route path="/usecase" element={<Usecase/>}/>
+        <Route path="/usecase" element={<Usecase />} />
         <Route path="/ecosystem-web" element={<EcosystemWeb />} />
-        <Route path="/startup" element={<StartupsWeb/>} />
-        <Route path="/webone" element={<WebCircleOne/>} />
-        <Route path="/webtwo" element={<WebCircleTwo/>} />
-        <Route path="/webthree" element={<WebUsecases/>}/>
-        <Route path="/webtrends" element={<WebIndustries/>} />
-        <Route path="/demo"
+        <Route path="/startup" element={<StartupsWeb />} />
+        <Route path="/webone" element={<WebCircleOne />} />
+        <Route path="/webtwo" element={<WebCircleTwo />} />
+        <Route path="/webthree" element={<WebUsecases />} />
+        <Route path="/webtrends" element={<WebIndustries />} />
+        <Route path="/test" element={<FirstLeftCircle/>} />
       </Routes>
     </div>
   );

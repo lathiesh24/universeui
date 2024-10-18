@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import sectorData from "./data/sector_data.json"; 
+import sectorData from "../data/sector_data.json"; 
 
 const FirstLeftCircle = () => {
   const sectors = sectorData.sectors;

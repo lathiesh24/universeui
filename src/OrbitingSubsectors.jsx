@@ -7,6 +7,7 @@ import VerticalLine from "./VerticalLine";
 import RightCircle from "./RightCircle";
 import SecondRightCircle from "./SecondRightCircl";
 
+
 const App = () => {
   const sectors = sectorData.sectors;
 
@@ -14,7 +15,7 @@ const App = () => {
     return sectors.slice(0, 8).map((sector) => ({
       sectorId: sector.sectorId,
       sectorName: sector.sectorName,
-      industries: sector.industries || [], // Include industries if needed
+      industries: sector.industries || [], 
     }));
   };
 
@@ -45,16 +46,13 @@ const App = () => {
       : [];
   };
 
-  // Function to get use cases for vertical dots
   const getUseCaseData = (technologyName) => {
     const selectedTech = getTechnologyData().find(
       (tech) => tech.technologyName === technologyName
     );
-
     return selectedTech ? selectedTech.useCases : [];
   };
 
-  // Function to get startups for the second right semicircle
   const getStartupData = (useCaseId) => {
     const allUseCases = getTechnologyData().flatMap(
       (tech) => tech.useCases || []
@@ -72,7 +70,6 @@ const App = () => {
       : [];
   };
 
-  // State initialization
   const [leftOuterCircleData1, setLeftOuterCircleData1] = useState(
     getInitialIndustryData()
   );
@@ -82,7 +79,6 @@ const App = () => {
   const [secondRightCircleData, setSecondRightCircleData] = useState([]);
   const [rightCircleData, setRightCircleData] = useState(getTechnologyData());
 
-  // Angle and dragging state management
   const totalLeftDots1 = leftOuterCircleData1.length;
   const totalLeftDots2 = leftOuterCircleData2.length;
   const totalMiddleDots = innerLeftCircleData.length;
@@ -532,8 +528,6 @@ const App = () => {
         leftCenterIndex2={leftCenterIndex2}
         leftOuterCircleData2={leftOuterCircleData2}
       />
-
-      {/* Middle Circle */}
       <MiddleCircle
         showMiddleCircle={showMiddleCircle}
         middleDots={middleDots}
@@ -542,15 +536,12 @@ const App = () => {
         middleCenterIndex={middleCenterIndex}
         innerLeftCircleData={innerLeftCircleData}
       />
-
-      {/* Vertical Line */}
       <VerticalLine
         openVerticalLine={openVerticalLine}
         verticalDots={verticalDots}
         verticalDotsData={verticalDotsData}
         handleVerticalDotClick={handleVerticalDotClick}
       />
-
       <RightCircle
         rightSemicircleOpen={rightSemicircleOpen}
         useSecondRightSemicircle={useSecondRightSemicircle}

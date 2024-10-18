@@ -4,15 +4,13 @@ import WebCircleTwo from "./WebCircleTwo";
 import WebCircleThree from "./WebCircleThree";
 
 const WebCombined = () => {
-  // State to track the current circle component
   const [currentCircle, setCurrentCircle] = useState(1);
 
-  // Function to handle the change between circles
   const handleCircleClick = () => {
     if (currentCircle === 1) {
-      setCurrentCircle(2); // Show WebCircleTwo when a dot in WebCircleOne is clicked
+      setCurrentCircle(2);
     } else if (currentCircle === 2) {
-      setCurrentCircle(3); // Show WebCircleThree when a dot in WebCircleTwo is clicked
+      setCurrentCircle(3);
     }
   };
 

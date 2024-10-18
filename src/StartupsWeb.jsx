@@ -23,10 +23,6 @@ const data = [
 ];
 
 const StartupsWeb = ({ handleEcosystem }) => {
-  const handleExploreClick = () => {
-    handleEcosystem({ data });
-  };
-
   return (
     <div className="mx-auto w-[400px] flex justify-center items-center h-screen">
       <div className="flex flex-col gap-8 justify-center items-center bg-white">
@@ -39,11 +35,13 @@ const StartupsWeb = ({ handleEcosystem }) => {
           <div className="relative z-10 text-white font-semibold text-2xl text-center">
             AI-Generated Marketing Campaigns for Targeted Financial Products
           </div>
+
+          {/* Button to go back to EcosystemWeb */}
           <div
             className="relative z-50 text-sm font-medium bg-white mx-auto px-4 py-2 cursor-pointer rounded-md shadow-md"
-            onClick={handleExploreClick}
+            onClick={handleEcosystem} // Navigate back to EcosystemWeb
           >
-            Explore Ecosystem
+            Explore Usecases
           </div>
         </div>
 

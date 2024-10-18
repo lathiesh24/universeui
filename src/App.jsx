@@ -26,7 +26,6 @@ const App = () => {
         <Route path="/subsectors" exact element={<SubSectors />} />
         <Route path="/orbiting-subsectors" element={<OrbitingSubsectors />} />
         <Route path="/mobile-orbit" element={<MobileOrbit />} />
-        <Route path="/curved-lineup" element={<CurvedLineUp />} />
         <Route path="/startup-info" element={<StartupInfo />} />
         <Route path="/usecase-description" element={<UsecaseDescription />} />
         <Route path="/ecosystem" element={<Ecosystem />} />
@@ -37,6 +36,7 @@ const App = () => {
         <Route path="/webtwo" element={<WebCircleTwo/>} />
         <Route path="/webthree" element={<WebUsecases/>}/>
         <Route path="/webtrends" element={<WebIndustries/>} />
+        <Route path="/demo"
       </Routes>
     </div>
   );
